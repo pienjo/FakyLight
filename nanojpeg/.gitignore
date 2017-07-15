@@ -1,0 +1,5 @@
+nanojpeg.o
+nanojpeg.d
+luabinding.d
+luabinding.o
+nanojpeg.so
