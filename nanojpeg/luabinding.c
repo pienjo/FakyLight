@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 struct image
 {
@@ -91,11 +92,11 @@ static int lua_extract(lua_State *L)
 
 static int lua_readppm(lua_State *L)
 {
-  const char *fn = luaL_checkstring(L, 2);
+  const char *fn = luaL_checkstring(L, 1);
   FILE *f = fopen(fn, "rb");
   if (!f)
   {
-    return luaL_error(L, "Error opening '%s'", fn);
+    return luaL_error(L, "Error opening '%s': %s", fn, strerror(errno));
   }
 
   char buf[16];
@@ -144,10 +145,10 @@ static int lua_readppm(lua_State *L)
   img.length = 3 * img.width * img.height;
   img.data = malloc(img.length);
 
-  if (fread(img.data, img.length, 1, f) )
+  if (fread(img.data, 1, img.length, f) != img.length )
   {
     fclose(f);
-    return luaL_error(L, "Error reading file %s", fn);
+    return luaL_error(L, "short read while reading file %s", fn);
   }
   fclose(f);
 
@@ -287,6 +288,53 @@ static int lua_testtransform(lua_State *L)
   return 1;
 }
 
+static uint32_t getHueHistogram(struct image *img, uint32_t *histogram, int left, int top, int right, int bottom)
+{
+  uint32_t total = 0;
+  for (int y = top; y < bottom; ++y)
+  {
+    const uint8_t *src = img->data + 3 *(y * img->width + left);
+    for (int x = left; x < right; ++x)
+    {
+      uint8_t h,s,v;
+      RGBtoHSV(*src++, *src++, *src++, &h, &s, &v);
+
+      int weight = ((int) s * (int) v) / 256;
+      histogram[(h-2)&0xff] += weight;
+      histogram[(h-1)&0xff] += weight;
+      histogram[h] += weight;
+      histogram[(h+1)&0xff] += weight;
+      histogram[(h+2)&0xff] += weight;
+      total += weight;
+    }
+  }
+
+  return total;
+}
+
+static int lua_getHueHistogram(lua_State *L)
+{
+  struct image img;
+  checkImage(L, 1, &img);
+
+  int left = luaL_checkint(L, 2);
+  int top = luaL_checkint(L, 3);
+  int right = luaL_checkint(L, 4);
+  int bottom = luaL_checkint(L, 5);
+
+  uint32_t histogram[256] = {0};
+  getHueHistogram(&img, histogram, left, top, right, bottom);
+
+  lua_createtable(L, 256, 0);
+  
+  for (int i = 0; i < 256; ++i)
+  {
+    lua_pushnumber(L, histogram[i]);
+    lua_rawseti(L, -2, i+1);
+  }
+  return 1;
+}
+
 static int lua_getDominantColor(lua_State *L)
 {
   struct image img;
@@ -298,20 +346,8 @@ static int lua_getDominantColor(lua_State *L)
   int bottom = luaL_checkint(L, 5);
 
   uint32_t histogram[256] = {0};
-  uint32_t total = 0;
+  uint32_t total = getHueHistogram(&img, histogram, left, top, right, bottom);
 
-  for (int y = top; y < bottom; ++y)
-  {
-    const uint8_t *src = img.data + 3 *(y * img.width + left);
-    for (int x = left; x < right; ++x)
-    {
-      uint8_t h,s,v;
-      RGBtoHSV(*src++, *src++, *src++, &h, &s, &v);
-      histogram[h] += s;
-      total += s;
-    }
-  }
-  
   if (!total)return 0;
   // try the mode, this will probably not work well.
 
@@ -378,6 +414,7 @@ static const struct luaL_Reg nanojpeg_functions[] =
    { "readppm", lua_readppm },
    { "testtransform", lua_testtransform},
    { "getDominantColor", lua_getDominantColor },
+   { "getHueHistogram", lua_getHueHistogram },
    { "newImage", lua_newImage },
    { "setRect", lua_setRect },
    { NULL, NULL }
