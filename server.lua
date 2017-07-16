@@ -24,12 +24,9 @@ local function dim()
 end
 
 local testidx = 1
-local output
 
 repeat
   local img = roap.getImage( 320, 180);
-  --local output = nanojpeg.testtransform(img)
-  -- output=nanojpeg.setRect(img, 0, 0, 320, 180, 0,0,0);
 
   local rects = {
     { 240, 120, 320, 180 , 1,5}, 
@@ -57,15 +54,10 @@ repeat
     for idx = rect[5],rect[6] do
       data[idx] = snippet
     end
-    if output then
-      output=nanojpeg.setRect(output, rect[1], rect[2], rect[3], rect[4], r,g,b)
-    end
   end 
 
   data = table.concat(data)
   fakySocket:send(data)
 
   posix.nanosleep(0, 1E14)
-  testidx = testidx + 1
-  print(testidx)
 until false

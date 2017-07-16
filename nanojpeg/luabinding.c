@@ -130,7 +130,7 @@ static int lua_readppm(lua_State *L)
   }
 
   int format;
-  if (fscanf(f, "%d",&format) != 1) 
+  if (fscanf(f, "%d\n",&format) != 1) 
   {
     fclose(f);
     return luaL_error(L, "Error parsing color component");
@@ -288,9 +288,30 @@ static int lua_testtransform(lua_State *L)
   return 1;
 }
 
-static uint32_t getHueHistogram(struct image *img, uint32_t *histogram, int left, int top, int right, int bottom)
+static void smoothHistogram(const uint32_t *inputHistogram, uint32_t *outputHistogram, int windowSize)
+{
+  uint32_t begin = 256 - windowSize; 
+  uint32_t end = windowSize;
+ 
+  uint32_t total = 0;
+  for (uint32_t init = 0; init < windowSize; ++init)
+  {
+    total += inputHistogram[init];
+    total += inputHistogram[begin + init];
+  }
+  
+  for (uint32_t center = 0; center < 256; ++center, end = (end + 1)%256, begin = (begin + 1)%256)
+  {
+    outputHistogram[center] = total;
+    total += inputHistogram[end];
+    total -= inputHistogram[begin];
+  }
+}
+
+static uint32_t getHueValueHistogram(struct image *img, uint32_t *histogram, uint32_t *valueHistogram, int left, int top, int right, int bottom)
 {
   uint32_t total = 0;
+
   for (int y = top; y < bottom; ++y)
   {
     const uint8_t *src = img->data + 3 *(y * img->width + left);
@@ -298,17 +319,13 @@ static uint32_t getHueHistogram(struct image *img, uint32_t *histogram, int left
     {
       uint8_t h,s,v;
       RGBtoHSV(*src++, *src++, *src++, &h, &s, &v);
+      valueHistogram[v] ++;
 
       int weight = ((int) s * (int) v) / 256;
-      histogram[(h-2)&0xff] += weight;
-      histogram[(h-1)&0xff] += weight;
       histogram[h] += weight;
-      histogram[(h+1)&0xff] += weight;
-      histogram[(h+2)&0xff] += weight;
       total += weight;
     }
   }
-
   return total;
 }
 
@@ -323,16 +340,20 @@ static int lua_getHueHistogram(lua_State *L)
   int bottom = luaL_checkint(L, 5);
 
   uint32_t histogram[256] = {0};
-  getHueHistogram(&img, histogram, left, top, right, bottom);
+  uint32_t valueHistogram[256] = {0};
+  getHueValueHistogram(&img, histogram,valueHistogram, left, top, right, bottom);
 
+  lua_createtable(L, 256, 0);
   lua_createtable(L, 256, 0);
   
   for (int i = 0; i < 256; ++i)
   {
     lua_pushnumber(L, histogram[i]);
+    lua_rawseti(L, -3, i+1);
+    lua_pushnumber(L, valueHistogram[i]);
     lua_rawseti(L, -2, i+1);
   }
-  return 1;
+  return 2;
 }
 
 static int lua_getDominantColor(lua_State *L)
@@ -346,28 +367,48 @@ static int lua_getDominantColor(lua_State *L)
   int bottom = luaL_checkint(L, 5);
 
   uint32_t histogram[256] = {0};
-  uint32_t total = getHueHistogram(&img, histogram, left, top, right, bottom);
+  uint32_t valueHistogram[256] = {0};
+  uint32_t smoothedHistogram[256];
+
+  uint32_t total = getHueValueHistogram(&img, histogram, valueHistogram, left, top, right, bottom);
+  smoothHistogram(histogram, smoothedHistogram, 7);
 
   if (!total)return 0;
-  // try the mode, this will probably not work well.
 
   uint8_t mode = 0;
   uint32_t mode_value = 0;
   for (int h = 0; h < 256; ++h)
   {
-    if (histogram[h] > mode_value)
+    if (smoothedHistogram[h] > mode_value)
     {
-      mode_value = histogram[h];
+      mode_value = smoothedHistogram[h];
       mode = h;
     }
   }
   
-  int target_s = 2048 * mode_value / total;
+  // Determine how much of the total response is represented by the smoothed bin.
+
+  int target_s = 128 * mode_value / total;
+  printf("%d\n", target_s);
   if (target_s > 255)
     target_s = 255;
+  
+  // Determine the modal value.
+  int total_v = 0;
+  for (int v = 10; v < 255; ++v)
+    total_v = total_v + valueHistogram[v];
+
+  total_v /= 2;
+
+  int target_v = 10;
+  for (; target_v < 256 && total_v > 0; target_v++)
+    total_v-= valueHistogram[target_v];
+
+  // take average with 0x80
+  target_v = (target_v + 255) / 2;
 
   uint8_t r, g, b;
-  HSVtoRGB(mode, target_s,255, &r,&g, &b);
+  HSVtoRGB(mode, target_s,target_v, &r,&g, &b);
   lua_pushinteger(L, r);
   lua_pushinteger(L, g);
   lua_pushinteger(L, b);
