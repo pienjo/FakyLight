@@ -2,6 +2,7 @@ local nanojpeg = require 'nanojpeg'
 local rects = require "rects"
 
 local function do_test(input_fn)
+  print(input_fn)
   local input = nanojpeg.readppm(input_fn)
   local output_fn = string.sub(input_fn, 1,-5) .."-out.ppm"
   local csvOutput = string.sub(input_fn, 1,-4) .. "csv"
@@ -32,17 +33,18 @@ local function do_test(input_fn)
     outfile:write(table.concat(line, ",") .. "\n")
   end
   
-  outfile:write(table.concat(line, ",") .. "\n")
 end
+
+do_test("TestImages/100nl.ppm")
 
 do_test("TestImages/discovery.ppm")
 do_test("TestImages/bamigo.ppm")
 
 do_test("TestImages/startrek/input.ppm")
-for i=1,17 do
+for i=1,5 do
   do_test("TestImages/startrek/input"..i..".ppm")
 end
-for i=1,29 do
+for i=1,5 do
   do_test("TestImages/americans1/input"..i..".ppm")
 end 
 

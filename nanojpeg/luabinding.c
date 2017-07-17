@@ -285,6 +285,7 @@ static uint32_t getHueValueHistogram(struct image *img, uint32_t *histogram, uin
 {
   uint32_t total = 0;
   uint32_t total_s = 0;
+  uint32_t sat_count = 0;
 
   for (int y = top; y < bottom; ++y)
   {
@@ -294,15 +295,23 @@ static uint32_t getHueValueHistogram(struct image *img, uint32_t *histogram, uin
       uint8_t h,s,v;
       RGBtoHSV(*src++, *src++, *src++, &h, &s, &v);
       valueHistogram[v] ++;
-      total_s += s;
+      if (v > 10)
+      {
+	total_s += s;
+	sat_count++;
+      }
 
       int weight = ((int) s * (int) v) / 256;
       histogram[h] += weight;
       total += weight;
     }
   }
+  
+  if (sat_count > 0)
+    *avgSat = total_s / sat_count;
+  else
+    *avgSat = 0;
 
-  *avgSat = total_s / ((right-left)*(bottom-top));
   return total;
 }
 
@@ -349,7 +358,7 @@ static int lua_getDominantColor(lua_State *L)
   uint32_t valueHistogram[256] = {0};
   uint32_t smoothedHistogram[256];
 
-  uint8_t target_s = 0;
+  uint32_t target_s = 0;
   uint8_t target_h = 0;
   uint8_t avgSat = 0;
 
@@ -370,7 +379,8 @@ static int lua_getDominantColor(lua_State *L)
     }
     
     // Determine how much of the total response is represented by the smoothed bin.
-    target_s = 2* avgSat * mode_value / total;
+    target_s = 256 * (mode_value) / total;
+    target_s =  ((int)avgSat) * target_s / 128;
     if (target_s > 255)
       target_s = 255;
   }
