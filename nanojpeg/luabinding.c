@@ -260,34 +260,6 @@ void HSVtoRGB(uint8_t h, uint8_t s, uint8_t v, uint8_t *r, uint8_t *g, uint8_t *
   }
 }
 
-static int lua_testtransform(lua_State *L)
-{
-  struct image img, output;
-
-  checkImage(L, 1, &img);
-
-  output = img;
-  output.data = malloc(output.length);
-
-  const uint8_t *src = img.data;
-  uint8_t *dst = output.data;
-
-  for (int i = 0; i < output.length; i += 3)
-  {
-    uint8_t h,s,v;
-    
-    RGBtoHSV(*src++, *src++, *src++, &h, &s, &v);
-    v = s;
-    s = 255;
-
-    HSVtoRGB(h,s,v, dst++, dst++, dst++);
-  }
-
-  PushImage(L, &output);
-  free(output.data);
-  return 1;
-}
-
 static void smoothHistogram(const uint32_t *inputHistogram, uint32_t *outputHistogram, int windowSize)
 {
   uint32_t begin = 256 - windowSize; 
@@ -370,29 +342,31 @@ static int lua_getDominantColor(lua_State *L)
   uint32_t valueHistogram[256] = {0};
   uint32_t smoothedHistogram[256];
 
+  uint8_t target_s = 0;
+  uint8_t target_h = 0;
+
   uint32_t total = getHueValueHistogram(&img, histogram, valueHistogram, left, top, right, bottom);
   smoothHistogram(histogram, smoothedHistogram, 7);
 
-  if (!total)return 0;
-
-  uint8_t mode = 0;
-  uint32_t mode_value = 0;
-  for (int h = 0; h < 256; ++h)
+  if (total)
   {
-    if (smoothedHistogram[h] > mode_value)
+    // Find the mode of the smoothed histogram.
+    uint32_t mode_value = 0;
+    for (int h = 0; h < 256; ++h)
     {
-      mode_value = smoothedHistogram[h];
-      mode = h;
+      if (smoothedHistogram[h] > mode_value)
+      {
+	mode_value = smoothedHistogram[h];
+	target_h = h;
+      }
     }
+    
+    // Determine how much of the total response is represented by the smoothed bin.
+    target_s = 160 * mode_value / total;
+    if (target_s > 255)
+      target_s = 255;
   }
-  
-  // Determine how much of the total response is represented by the smoothed bin.
 
-  int target_s = 128 * mode_value / total;
-  printf("%d\n", target_s);
-  if (target_s > 255)
-    target_s = 255;
-  
   // Determine the modal value.
   int total_v = 0;
   for (int v = 10; v < 255; ++v)
@@ -405,10 +379,12 @@ static int lua_getDominantColor(lua_State *L)
     total_v-= valueHistogram[target_v];
 
   // take average with 0x80
-  target_v = (target_v + 255) / 2;
+  target_v+= 96;
+  if (target_v > 255)
+    target_v = 255;
 
   uint8_t r, g, b;
-  HSVtoRGB(mode, target_s,target_v, &r,&g, &b);
+  HSVtoRGB(target_h, target_s,target_v, &r,&g, &b);
   lua_pushinteger(L, r);
   lua_pushinteger(L, g);
   lua_pushinteger(L, b);
@@ -453,7 +429,6 @@ static const struct luaL_Reg nanojpeg_functions[] =
    { "extract", lua_extract },
    { "writeppm", lua_writeppm },
    { "readppm", lua_readppm },
-   { "testtransform", lua_testtransform},
    { "getDominantColor", lua_getDominantColor },
    { "getHueHistogram", lua_getHueHistogram },
    { "newImage", lua_newImage },
