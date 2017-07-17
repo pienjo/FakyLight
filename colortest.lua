@@ -42,7 +42,15 @@ local function do_test(input_fn)
     end
     outfile:write(table.concat(line, ",") .. "\n")
   end
+  
+  local line = { "gray" }
+  for _, hist in ipairs(hists) do
+    table.insert(line, hist[257])
+  end
+  outfile:write(table.concat(line, ",") .. "\n")
 end
+
+do_test("TestImages/discovery.ppm")
 
 do_test("TestImages/startrek/input.ppm")
 for i=1,17 do
@@ -50,4 +58,5 @@ for i=1,17 do
 end
 for i=1,29 do
   do_test("TestImages/americans1/input"..i..".ppm")
-end
+end 
+
