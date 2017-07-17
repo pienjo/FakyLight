@@ -2,7 +2,7 @@ local roap = require 'roap'
 local socket = require "socket"
 local posix = require "posix"
 local fakyAddress = "192.168.64.27"
-local rects = require 'rects.lua'
+local rects = require 'rects'
 
 local fakySocket = socket.udp()
 fakySocket:setpeername(fakyAddress, 5628)

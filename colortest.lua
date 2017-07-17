@@ -1,5 +1,5 @@
 local nanojpeg = require 'nanojpeg'
-local rects = require "rects.lua"
+local rects = require "rects"
 
 local function do_test(input_fn)
   local input = nanojpeg.readppm(input_fn)
