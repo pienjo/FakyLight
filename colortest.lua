@@ -1,16 +1,5 @@
 local nanojpeg = require 'nanojpeg'
-
-  local rects = {
-    { 240, 120, 320, 180 , 1,5}, 
-    { 240, 60, 320, 120, 6, 10 },
-    { 256, 0, 320, 60, 11, 19 },
-    { 192, 0, 256, 60, 20, 24 },
-    { 128, 0,  192, 60, 25, 29 },
-    { 64,  0,  128, 60, 30, 34 },
-    { 0, 0, 64, 60, 35, 42 },
-    { 0, 60, 80, 120, 43,47 },
-    { 0, 120, 80, 180, 48, 53 },
-  }
+local rects = require "rects.lua"
 
 local function do_test(input_fn)
   local input = nanojpeg.readppm(input_fn)
@@ -43,14 +32,11 @@ local function do_test(input_fn)
     outfile:write(table.concat(line, ",") .. "\n")
   end
   
-  local line = { "gray" }
-  for _, hist in ipairs(hists) do
-    table.insert(line, hist[257])
-  end
   outfile:write(table.concat(line, ",") .. "\n")
 end
 
 do_test("TestImages/discovery.ppm")
+do_test("TestImages/bamigo.ppm")
 
 do_test("TestImages/startrek/input.ppm")
 for i=1,17 do

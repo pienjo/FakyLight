@@ -281,9 +281,10 @@ static void smoothHistogram(const uint32_t *inputHistogram, uint32_t *outputHist
 }
 
 
-static uint32_t getHueValueHistogram(struct image *img, uint32_t *histogram, uint32_t *valueHistogram, int left, int top, int right, int bottom)
+static uint32_t getHueValueHistogram(struct image *img, uint32_t *histogram, uint32_t *valueHistogram, uint8_t *avgSat, int left, int top, int right, int bottom)
 {
   uint32_t total = 0;
+  uint32_t total_s = 0;
 
   for (int y = top; y < bottom; ++y)
   {
@@ -293,22 +294,15 @@ static uint32_t getHueValueHistogram(struct image *img, uint32_t *histogram, uin
       uint8_t h,s,v;
       RGBtoHSV(*src++, *src++, *src++, &h, &s, &v);
       valueHistogram[v] ++;
-      int weight = 0;
+      total_s += s;
 
-      if ( s < 10)
-      {
-	int weight = v/16 + 1;
-	histogram[256]+= weight;
-	total+=weight;
-      }
-      else
-      {	
-	int weight = ((int) s * (int) v) / 256;
-	histogram[h] += weight;
-	total += weight;
-      }
+      int weight = ((int) s * (int) v) / 256;
+      histogram[h] += weight;
+      total += weight;
     }
   }
+
+  *avgSat = total_s / ((right-left)*(bottom-top));
   return total;
 }
 
@@ -322,11 +316,13 @@ static int lua_getHueHistogram(lua_State *L)
   int right = luaL_checkint(L, 4);
   int bottom = luaL_checkint(L, 5);
 
-  uint32_t histogram[257] = {0};
+  uint32_t histogram[256] = {0};
   uint32_t valueHistogram[256] = {0};
-  getHueValueHistogram(&img, histogram,valueHistogram, left, top, right, bottom);
+  uint8_t avgSat;
 
-  lua_createtable(L, 257, 0);
+  getHueValueHistogram(&img, histogram,valueHistogram, &avgSat, left, top, right, bottom);
+
+  lua_createtable(L, 256, 0);
   lua_createtable(L, 256, 0);
   
   for (int i = 0; i < 256; ++i)
@@ -336,10 +332,6 @@ static int lua_getHueHistogram(lua_State *L)
     lua_pushnumber(L, valueHistogram[i]);
     lua_rawseti(L, -2, i+1);
   }
-
-  lua_pushnumber(L, histogram[256]);
-  lua_rawseti(L, -3, 257);
-
   return 2;
 }
 
@@ -359,8 +351,9 @@ static int lua_getDominantColor(lua_State *L)
 
   uint8_t target_s = 0;
   uint8_t target_h = 0;
+  uint8_t avgSat = 0;
 
-  uint32_t total = getHueValueHistogram(&img, histogram, valueHistogram, left, top, right, bottom);
+  uint32_t total = getHueValueHistogram(&img, histogram, valueHistogram, &avgSat, left, top, right, bottom);
   smoothHistogram(histogram, smoothedHistogram, 7);
 
   if (total)
@@ -377,7 +370,7 @@ static int lua_getDominantColor(lua_State *L)
     }
     
     // Determine how much of the total response is represented by the smoothed bin.
-    target_s = 160 * mode_value / total;
+    target_s = 2* avgSat * mode_value / total;
     if (target_s > 255)
       target_s = 255;
   }

@@ -2,6 +2,7 @@ local roap = require 'roap'
 local socket = require "socket"
 local posix = require "posix"
 local fakyAddress = "192.168.64.27"
+local rects = require 'rects.lua'
 
 local fakySocket = socket.udp()
 fakySocket:setpeername(fakyAddress, 5628)
@@ -24,18 +25,6 @@ local function dim()
 end
 
 local testidx = 1
-
-local rects = {
-{ 240, 120, 320, 180 , 1,5}, 
-{ 240, 60, 320, 120, 6, 10 },
-{ 256, 0, 320, 60, 11, 19 },
-{ 192, 0, 256, 60, 20, 24 },
-{ 128, 0,  192, 60, 25, 29 },
-{ 64,  0,  128, 60, 30, 34 },
-{ 0, 0, 64, 60, 35, 42 },
-{ 0, 60, 80, 120, 43,47 },
-{ 0, 120, 80, 180, 48, 53 },
-}
 
 repeat
   local img = roap.getImage( 320, 180);
