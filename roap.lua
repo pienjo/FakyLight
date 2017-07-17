@@ -27,6 +27,12 @@ local function SendRequest(method, url, request, mimetype)
   local data = table.concat(headers, "\r\n")
 
   local sock = socket.connect(host, port)
+  
+  if not sock then
+    return 999, nil
+  end
+  sock:setoption( 'keepalive', true)
+  sock:setoption( 'tcp-nodelay', true)
 
   sock:send(data)
   
@@ -65,8 +71,11 @@ roap.getImage = function( horizResolution, vertResolution)
 
 	status,data = SendRequest("GET", "/roap/api/data?target=screen_image&width="..horizResolution.."&height="..vertResolution.."&type=0", nil, "image/jpeg")
 
-
-	return nanojpeg.extract(data)
+	if status ~= 200 then
+	  return nil
+	else
+	  return nanojpeg.extract(data)
+	end
 end
 
 return roap
