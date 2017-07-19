@@ -11,6 +11,7 @@ local roapState = 0 -- Not connected
 local roapSocket = nil
 local requests = { }
 
+
 local function SendRequest(method, url, request, mimetype)
   
   local done = false
@@ -43,18 +44,20 @@ local function SendRequest(method, url, request, mimetype)
   repeat
     if (roapState == 0) then
       -- open socket
-      print ("Open socket")
-      roapSocket,errorString = socket.connect(host, port)
+      roapSocket = socket.tcp()
+      roapSocket:settimeout(10)
 
-      if not roapSocket then
-	print ("Error opening socket: ", errorString)
+      if 1 ~= roapSocket:connect(host, port) then
 	contentCode = 999
 	done = true
+	roapSocket:close()
+	roapSocket = nil
+      else
+	print ("Connected")
+	roapSocket:setoption('keepalive', true)
+	roapSocket:settimeout(5)
+	roapState = 1;
       end
-
-      roapSocket:setoption('keepalive', true)
-      roapSocket:settimeout(5)
-      roapState = 1;
     elseif roapState == 1 then
       -- Connected, sending header
       nextToSend, errorString = roapSocket:send(data, nextToSend )
@@ -79,16 +82,7 @@ local function SendRequest(method, url, request, mimetype)
 	local _
 	_, _, contentCode =string.find(httpResponse, "HTTP/1.1 (%d+)")
 	contentCode = tonumber(contentCode)
-	if (contentCode ~= 200) then
-	  --error, close socket
-	  roapSocket:close()
-	  roapSocket = nil
-	  roapState = 0
-	  
-	  done = true
-	else
-	  roapState = 3
-        end
+        roapState = 3
       end
     elseif roapState == 3 then
       -- Parse header line
