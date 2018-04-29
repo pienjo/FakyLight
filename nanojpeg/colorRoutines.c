@@ -23,13 +23,16 @@ void RGBtoHSV(uint8_t r, uint8_t g, uint8_t b, uint8_t *h, uint8_t *s, uint8_t *
     
     if (max == r)
     {
-      *h = 43 * (g - b) / delta;
+      if (g>=b)
+        *h = 42 * (g - b) / delta;
+      else
+	*h = HUE_MAX - 42 * (b-g) / delta;
     } else if ( max == g)
     {
-      *h = 85 + 43 * (b - r) / delta;
+      *h = 84 + 42 * (b - r) / delta;
     } else
     {
-      *h = 171 + 43 * (r - g) / delta;
+      *h = 168 + 42 * (r - g) / delta;
     }
   }
 }
@@ -44,8 +47,8 @@ void HSVtoRGB(uint8_t h, uint8_t s, uint8_t v, uint8_t *r, uint8_t *g, uint8_t *
     return;
   }
 
-  int region = h / 43;
-  uint8_t remainder = (h - 43 * region) * 6;
+  int region = h / 42;
+  uint8_t remainder = (h - 42 * region) * 6;
 
   uint8_t p = ((uint16_t) v * (255 - s)) >> 8;
   uint8_t q = ((uint16_t) v * (255 - (((uint16_t) s * remainder) >> 8))) >> 8;
