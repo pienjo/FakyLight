@@ -4,7 +4,7 @@ SOURCES=main.cpp ../colorRoutines.c colorRoutines_test.cpp
 
 OBJECTS_1=$(SOURCES:%.cpp=obj/%.o)
 OBJECTS=$(OBJECTS_1:../%.c=obj/%.o) obj/gtest-all.o
-CFLAGS=-g 
+CFLAGS=-g -I $(GTEST_DIR)/include
 LDFLAGS=-pthread
 
 DEPS=$(OBJECTS:.o=.d)
