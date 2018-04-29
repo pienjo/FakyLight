@@ -1,7 +1,7 @@
 LUA_CFLAGS=`pkg-config lua5.1 --cflags`
 LUA_LDFLAGS=`pkg-config lua5.1 --libs`
 
-SOURCES=nanojpeg.c luabinding.c
+SOURCES=nanojpeg.c luabinding.c colorRoutines.c
 
 OBJECTS=$(SOURCES:%.c=%.o)
 DEPS=$(OBJECTS:.o=.d)
