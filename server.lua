@@ -34,7 +34,7 @@ repeat
   else
     local data = { }
     for _, rect in pairs(rects) do
-      local b,g,r= nanojpeg.getDominantColor(img, rect[1], rect[2], rect[3], rect[4]);
+      local r,g,b= nanojpeg.getDominantColor(img, rect[1], rect[2], rect[3], rect[4]);
 
       if not r then
 	r = 0

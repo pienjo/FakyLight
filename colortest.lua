@@ -13,7 +13,7 @@ local function do_test(input_fn)
   local header = { "color#" }
   for idx, rect in pairs(rects) do
     hists[idx] = nanojpeg.getHueHistogram(input, rect[1], rect[2], rect[3],rect[4])
-    local b,g,r = nanojpeg.getDominantColor(input, rect[1], rect[2], rect[3], rect[4])
+    local r,g,b = nanojpeg.getDominantColor(input, rect[1], rect[2], rect[3], rect[4])
 
     if r then
       output = nanojpeg.setRect(output, rect[1], rect[2], rect[3], rect[4], r,g, b)
