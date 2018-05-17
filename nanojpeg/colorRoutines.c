@@ -101,7 +101,10 @@ uint32_t getHueValueHistogram(struct image *img, uint32_t *histogram, uint32_t *
     for (int x = left; x < right; ++x)
     {
       uint8_t h,s,v;
-      RGBtoHSV(*src++, *src++, *src++, &h, &s, &v);
+      const uint8_t r = *src++;
+      const uint8_t g = *src++;
+      const uint8_t b= *src++;
+      RGBtoHSV(r, g, b, &h, &s, &v);
       valueHistogram[v] ++;
       if (v > 10)
       {
