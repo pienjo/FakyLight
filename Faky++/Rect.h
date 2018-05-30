@@ -3,6 +3,7 @@
 
 class Rect
 {
-  uint32_t mLeft, mRight, mTop, mBottom;
+  public:
+    uint32_t mLeft, mTop, mRight, mBottom;
 };
 #endif
