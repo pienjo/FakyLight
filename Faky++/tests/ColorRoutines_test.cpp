@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "../ColorRoutines.h"
+#include <algorithm>
 
 using namespace ColorRoutines;
 
@@ -107,6 +108,37 @@ TEST(RGBtoHSV, FullMagenta)
   ASSERT_EQ(210, h);
 }
 
+TEST(RGBtoHSV, HueRange)
+{
+  // arrange
+  uint8_t min = 255;
+  uint8_t max = 0;
+  uint8_t dummy_s, dummy_v;
+
+  // act
+  for (int componentValue = 0; componentValue <256; ++componentValue)
+  {
+    uint8_t contraValue = 255 - (uint8_t) componentValue;
+    
+    uint8_t h1,h2, h3;
+
+    RGBtoHSV(componentValue, contraValue, 0, h1, dummy_s, dummy_v);
+    RGBtoHSV(componentValue, 0, contraValue, h2, dummy_s, dummy_v);
+    RGBtoHSV(0, componentValue, contraValue, h3, dummy_s, dummy_v);
+
+    min = std::min(h1, min);
+    min = std::min(h2, min);
+    min = std::min(h3, min);
+
+    max = std::max(h1, max);
+    max = std::max(h2, max);
+    max = std::max(h3, max);
+  }
+
+  // Assert
+  ASSERT_EQ(0, min);
+  ASSERT_EQ(HUE_MAX, max);
+}
 TEST(HSVtoRGB, FullRed)
 {
   // arrange
@@ -197,6 +229,23 @@ TEST(HSVtoRGB, FullMagenta)
   ASSERT_EQ(254, b);
 }
 
+TEST(ImageStatistics, Constructor)
+{
+  // Arrange
+
+  // Act
+  ImageStatistics stats;
+
+  // Assert
+  for (int i = 0; i < ImageStatistics::HueHistogramSize; ++i)
+    ASSERT_EQ(0, stats.mHueHistogram[i]);
+
+  for (int i = 0; i < 256; ++i)
+    ASSERT_EQ(0, stats.mValueHistogram[i]);
+   
+  ASSERT_EQ(0, stats.mHueHistogramTotal);
+  ASSERT_EQ(0, stats.mAverageSaturation);
+}
 TEST(getHueValueHistogram, ShadesofGray)
 {
   // arrange
@@ -236,7 +285,7 @@ TEST(getHueValueHistogram, ShadesOfRed)
   ASSERT_EQ(2, stats.mValueHistogram[255]);
   ASSERT_EQ(1, stats.mValueHistogram[0x7f]);
   
-  for (int h = 1; h <= ImageStatistics::HueHistogramSize; ++h)
+  for (int h = 1; h < ImageStatistics::HueHistogramSize; ++h)
   {
     if (stats.mHueHistogram[h] > 0)
     {
@@ -265,7 +314,7 @@ TEST(getHueValueHistogram, ShadesOfGreen)
   ASSERT_EQ(2, stats.mValueHistogram[255]);
   ASSERT_EQ(1, stats.mValueHistogram[0x7f]);
   
-  for (int h = 1; h <= ImageStatistics::HueHistogramSize; ++h)
+  for (int h = 1; h < ImageStatistics::HueHistogramSize; ++h)
   {
     if (stats.mHueHistogram[h] > 0)
     {

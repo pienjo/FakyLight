@@ -23,8 +23,8 @@ namespace ColorRoutines
       ImageStatistics();
       
       enum {
-	HueHistogramSize = HUE_MAX;
-      }
+	HueHistogramSize = (HUE_MAX+1)
+      };
       histogramT mHueHistogram;
       uint32_t mHueHistogramTotal;
       histogramT mValueHistogram;

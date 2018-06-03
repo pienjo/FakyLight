@@ -5,7 +5,7 @@ ColorRoutines::ImageStatistics::ImageStatistics()
   : mHueHistogramTotal (0)
   , mAverageSaturation (0)
 {
-  mHueHistogram.resize(HUE_MAX + 1);
+  mHueHistogram.resize(HueHistogramSize);
   mValueHistogram.resize(256);
 }
 
