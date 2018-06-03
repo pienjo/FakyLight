@@ -1,3 +1,4 @@
 nanojpeg.so
 *.o
 *.d
+.*.swp
