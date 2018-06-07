@@ -11,11 +11,21 @@ namespace ColorRoutines
   {
     HUE_MAX = 252
   };
+  
+  struct RGBColor 
+  {
+    uint8_t r,g,b;
+  };
 
+  struct HSVColor
+  {
+    uint8_t h,s,v;
+  };
+  
   typedef std::vector<uint32_t> histogramT;
   
-  void RGBtoHSV(const uint8_t r, const uint8_t g, const uint8_t b, uint8_t &h, uint8_t &s, uint8_t &v);
-  void HSVtoRGB(const uint8_t h, const uint8_t s, const uint8_t v, uint8_t &r, uint8_t &g, uint8_t &b);
+  HSVColor RGBtoHSV(const RGBColor &rgbColor);
+  RGBColor HSVtoRGB(const HSVColor &hsvColor);
   
   class ImageStatistics
   {

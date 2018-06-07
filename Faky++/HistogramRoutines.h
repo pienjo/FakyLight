@@ -11,6 +11,8 @@ namespace HistogramRoutines
 
   size_t GetMode_Hue(const ImageStatistics &iStatistics);
   size_t GetModal_Value(const ImageStatistics &iStatistics);
+
+  
 }
 
 #endif

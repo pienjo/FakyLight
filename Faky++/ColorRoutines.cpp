@@ -1,6 +1,9 @@
 #include "ColorRoutines.h"
 #include "Image.h"
 
+using ColorRoutines::RGBColor;
+using ColorRoutines::HSVColor;
+
 ColorRoutines::ImageStatistics::ImageStatistics() 
   : mHueHistogramTotal (0)
   , mAverageSaturation (0)
@@ -9,92 +12,77 @@ ColorRoutines::ImageStatistics::ImageStatistics()
   mValueHistogram.resize(256);
 }
 
-void ColorRoutines::RGBtoHSV(uint8_t r, uint8_t g, uint8_t b, uint8_t &h, uint8_t &s, uint8_t &v)
+HSVColor ColorRoutines::RGBtoHSV(const RGBColor &rgb)
 {
-  uint8_t max = (r > g ? r : g);
-  max = (max > b ? max : b);
+  HSVColor hsv;
 
-  uint8_t min = (r < g ? r : g);
-  min = (min < b ? min : b);
+  uint8_t max = (rgb.r > rgb.g ? rgb.r : rgb.g);
+  max = (max > rgb.b ? max : rgb.b);
 
-  v = max;
+  uint8_t min = (rgb.r < rgb.g ? rgb.r : rgb.g);
+  min = (min < rgb.b ? min : rgb.b);
+
+  hsv.v = max;
 
   uint8_t delta = max - min;
   if (delta == 0)
   {
-    h = 0;
-    s = 0;
+    hsv.h = 0;
+    hsv.s = 0;
   }
   else
   {
-    s = (255 * (uint16_t) delta-8) / max;
+    hsv.s = (255 * (uint16_t) delta-8) / max;
     
-    if (max == r)
+    if (max == rgb.r)
     {
-      if (g>=b)
-        h = 42 * (g - b) / delta;
+      if (rgb.g>=rgb.b)
+        hsv.h = 42 * (rgb.g - rgb.b) / delta;
       else
-	h = HUE_MAX - 42 * (b-g) / delta;
-    } else if ( max == g)
+	hsv.h = HUE_MAX - 42 * (rgb.b-rgb.g) / delta;
+    } else if ( max == rgb.g)
     {
-      h = 84 + 42 * (b - r) / delta;
+      hsv.h = 84 + 42 * (rgb.b - rgb.r) / delta;
     } else
     {
-      h = 168 + 42 * (r - g) / delta;
+      hsv.h = 168 + 42 * (rgb.r - rgb.g) / delta;
     }
   }
+
+  return hsv;
 }
 
-void ColorRoutines::HSVtoRGB(uint8_t h, uint8_t s, uint8_t v, uint8_t &r, uint8_t &g, uint8_t &b)
+RGBColor ColorRoutines::HSVtoRGB( const HSVColor &hsv)
 {
-  if (s == 0)
+
+  if (hsv.s == 0)
   {
-    r = v;
-    g = v;
-    b = v;
-    return;
+    return {hsv.v, hsv.v, hsv.v };
   }
 
-  int region = h / 42;
-  uint8_t remainder = (h - 42 * region) * 6;
+  int region = hsv.h / 42;
+  uint8_t remainder = (hsv.h - 42 * region) * 6;
 
-  uint8_t p = ((uint16_t) v * (255 - s)) >> 8;
-  uint8_t q = ((uint16_t) v * (255 - (((uint16_t) s * remainder) >> 8))) >> 8;
-  uint8_t t = ((uint16_t) v * (255 - (((uint16_t) s * ( 255 - remainder)) >> 8))) >> 8;
+  uint8_t p = ((uint16_t) hsv.v * (255 - hsv.s)) >> 8;
+  uint8_t q = ((uint16_t) hsv.v * (255 - (((uint16_t) hsv.s * remainder) >> 8))) >> 8;
+  uint8_t t = ((uint16_t) hsv.v * (255 - (((uint16_t) hsv.s * ( 255 - remainder)) >> 8))) >> 8;
 
   switch(region)
   {
     case 0:
-      r = v;
-      g = t;
-      b = p;
-      break;
+      return { hsv.v,t, p };
     case 1:
-      r = q;
-      g = v;
-      b = p;
-      break;
+      return {q, hsv.v, p };
     case 2:
-      r = p;
-      g = v;
-      b = t;
-      break;
+      return {p,hsv.v,t };
     case 3:
-      r = p;
-      g = q;
-      b = v;
-      break;
+      return {p,q, hsv.v};
     case 4:
-      r = t;
-      g = p;
-      b = v;
-      break;
+      return {t, p, hsv.v};
     default:
-      r = v;
-      g = p;
-      b = q;
       break;
   }
+  return {hsv.v,p,q };
 }
 
 ColorRoutines::ImageStatistics ColorRoutines::GetImageStatistics(const Image &iImage, const Rect &iRect)
@@ -112,20 +100,18 @@ ColorRoutines::ImageStatistics ColorRoutines::GetImageStatistics(const Image &iI
     const uint8_t *src_p = src + iImage.Stride() * iRect.mLeft;
     for (int x = iRect.mLeft; x < iRect.mRight; ++x, src_p += stride)
     {
-      uint8_t h,s,v;
-      const uint8_t &r = src_p[0];
-      const uint8_t &g = src_p[1];
-      const uint8_t &b = src_p[2];
-      RGBtoHSV(r, g, b, h, s, v);
-      stats.mValueHistogram[v] ++;
-      if (v > 10)
+      const RGBColor rgb={src_p[0], src_p[1], src_p[2]};
+      HSVColor hsv = RGBtoHSV(rgb);
+
+      stats.mValueHistogram[hsv.v] ++;
+      if (hsv.v > 10)
       {
-	total_s += s;
+	total_s += hsv.s;
 	sat_count++;
       }
 
-      int weight = ((int) s * (int) v) / 256;
-      stats.mHueHistogram[h] += weight;
+      int weight = ((int) hsv.s * (int) hsv.v) / 256;
+      stats.mHueHistogram[hsv.h] += weight;
       stats.mHueHistogramTotal += weight;
     }
   }

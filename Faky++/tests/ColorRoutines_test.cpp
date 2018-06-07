@@ -21,91 +21,90 @@ class TestImage_T : public Image
 TEST(RGBtoHSV, FullRed)
 {
   // arrange
-  uint8_t r = 255, g = 0, b = 0;
-  uint8_t h, s, v;
+  const RGBColor rgb = { 255,0,0 };
+  HSVColor hsv;
 
   // act
-  RGBtoHSV(r, g, b, h, s, v);
+  hsv = RGBtoHSV(rgb);
 
   // Assert
-  ASSERT_EQ(255, v); 
-  ASSERT_EQ(254, s);
-  ASSERT_EQ(0, h);
+  ASSERT_EQ(255, hsv.v); 
+  ASSERT_EQ(254, hsv.s);
+  ASSERT_EQ(0, hsv.h);
 }
-
 TEST(RGBtoHSV, FullYellow)
 {
   // arrange
-  uint8_t r = 255, g = 255, b = 0;
-  uint8_t h, s, v;
+  const RGBColor rgb = { 255,255,0 };
+  HSVColor hsv;
 
   // act
-  RGBtoHSV(r, g, b, h, s, v);
+  hsv = RGBtoHSV(rgb);
 
   // Assert
-  ASSERT_EQ(255, v); 
-  ASSERT_EQ(254, s);
-  ASSERT_EQ(42, h);
+  ASSERT_EQ(255, hsv.v); 
+  ASSERT_EQ(254, hsv.s);
+  ASSERT_EQ(42, hsv.h);
 }
 
 TEST(RGBtoHSV, FullGreen)
 {
   // arrange
-  uint8_t r = 0, g = 255, b = 0;
-  uint8_t h, s, v;
+  const RGBColor rgb = { 0,255,0 };
+  HSVColor hsv;
 
   // act
-  RGBtoHSV(r, g, b, h, s, v);
+  hsv = RGBtoHSV(rgb);
 
   // Assert
-  ASSERT_EQ(255, v); 
-  ASSERT_EQ(254, s);
-  ASSERT_EQ(84, h);
+  ASSERT_EQ(255, hsv.v); 
+  ASSERT_EQ(254, hsv.s);
+  ASSERT_EQ(84, hsv.h);
 }
 
 TEST(RGBtoHSV, FullCyan)
 {
   // arrange
-  uint8_t r = 0, g = 255, b = 255;
-  uint8_t h, s, v;
+  const RGBColor rgb = { 0,255,255 };
+  HSVColor hsv;
 
   // act
-  RGBtoHSV(r, g, b, h, s, v);
+  hsv = RGBtoHSV(rgb);
 
   // Assert
-  ASSERT_EQ(255, v); 
-  ASSERT_EQ(254, s);
-  ASSERT_EQ(126, h);
+  ASSERT_EQ(255, hsv.v); 
+  ASSERT_EQ(254, hsv.s);
+  ASSERT_EQ(126, hsv.h);
 }
 
 TEST(RGBtoHSV, FullBlue)
 {
   // arrange
-  uint8_t r = 0, g = 0, b = 255;
-  uint8_t h, s, v;
+  const RGBColor rgb = { 0,0,255 };
+  HSVColor hsv;
 
   // act
-  RGBtoHSV(r, g, b, h, s, v);
-
+  hsv = RGBtoHSV(rgb);
+  
   // Assert
-  ASSERT_EQ(255, v); 
-  ASSERT_EQ(254, s);
-  ASSERT_EQ(168, h);
+  ASSERT_EQ(255, hsv.v); 
+  ASSERT_EQ(254, hsv.s);
+  ASSERT_EQ(168, hsv.h);
 }
 
 TEST(RGBtoHSV, FullMagenta)
 {
   // arrange
-  uint8_t r = 255, g = 0, b = 255;
-  uint8_t h, s, v;
+  const RGBColor rgb = { 255,0,255 };
+  HSVColor hsv;
 
   // act
-  RGBtoHSV(r, g, b, h, s, v);
+  hsv = RGBtoHSV(rgb);
 
   // Assert
-  ASSERT_EQ(255, v); 
-  ASSERT_EQ(254, s);
-  ASSERT_EQ(210, h);
+  ASSERT_EQ(255, hsv.v); 
+  ASSERT_EQ(254, hsv.s);
+  ASSERT_EQ(210, hsv.h);
 }
 
 TEST(RGBtoHSV, HueRange)
@@ -113,120 +112,119 @@ TEST(RGBtoHSV, HueRange)
   // arrange
   uint8_t min = 255;
   uint8_t max = 0;
-  uint8_t dummy_s, dummy_v;
 
   // act
   for (int componentValue = 0; componentValue <256; ++componentValue)
   {
     uint8_t contraValue = 255 - (uint8_t) componentValue;
     
-    uint8_t h1,h2, h3;
+    RGBColor rgb = { (uint8_t) componentValue, contraValue, 0 };
+    HSVColor hsv;
 
-    RGBtoHSV(componentValue, contraValue, 0, h1, dummy_s, dummy_v);
-    RGBtoHSV(componentValue, 0, contraValue, h2, dummy_s, dummy_v);
-    RGBtoHSV(0, componentValue, contraValue, h3, dummy_s, dummy_v);
+    hsv = RGBtoHSV(rgb);
+    min = std::min(hsv.h, min);
+    max = std::max(hsv.h, max);
 
-    min = std::min(h1, min);
-    min = std::min(h2, min);
-    min = std::min(h3, min);
+    rgb = { (uint8_t) componentValue, 0, contraValue};
+    
+    hsv = RGBtoHSV(rgb);
+    min = std::min(hsv.h, min);
+    max = std::max(hsv.h, max);
 
-    max = std::max(h1, max);
-    max = std::max(h2, max);
-    max = std::max(h3, max);
+    rgb = { 0, (uint8_t) componentValue, contraValue};
+    
+    hsv = RGBtoHSV(rgb);
+    min = std::min(hsv.h, min);
+    max = std::max(hsv.h, max);
   }
 
   // Assert
   ASSERT_EQ(0, min);
   ASSERT_EQ(HUE_MAX, max);
 }
+
 TEST(HSVtoRGB, FullRed)
 {
   // arrange
-  uint8_t r, g, b;
-  uint8_t h = 0, s = 255, v = 255;
-
+  const HSVColor hsv = { 0,255,255 };
+  
   // act
-  HSVtoRGB(h, s, v, r, g, b);
+  RGBColor rgb = HSVtoRGB(hsv);
 
   // assert
-  ASSERT_EQ(255, r);
-  ASSERT_EQ(0, g);
-  ASSERT_EQ(0, b);
+  ASSERT_EQ(255, rgb.r);
+  ASSERT_EQ(0, rgb.g);
+  ASSERT_EQ(0, rgb.b);
 }
 
 TEST(HSVtoRGB, FullYellow)
 {
   // arrange
-  uint8_t r, g, b;
-  const uint8_t h = 42, s = 255, v = 255;
-
+  const HSVColor hsv = { 42,255,255 };
+  
   // act
-  HSVtoRGB(h, s, v, r, g, b);
+  RGBColor rgb = HSVtoRGB(hsv);
 
   // assert
-  ASSERT_EQ(254, r);
-  ASSERT_EQ(255, g);
-  ASSERT_EQ(0, b);
+  ASSERT_EQ(254, rgb.r);
+  ASSERT_EQ(255, rgb.g);
+  ASSERT_EQ(0, rgb.b);
 }
 
 TEST(HSVtoRGB, FullGreen)
 {
   // arrange
-  uint8_t r, g, b;
-  const uint8_t h = 84, s = 255, v = 255;
-
+  const HSVColor hsv = { 84,255,255 };
+  
   // act
-  HSVtoRGB(h, s, v, r, g, b);
+  RGBColor rgb = HSVtoRGB(hsv);
 
   // assert
-  ASSERT_EQ(0, r);
-  ASSERT_EQ(255, g);
-  ASSERT_EQ(0, b);
+  ASSERT_EQ(0, rgb.r);
+  ASSERT_EQ(255, rgb.g);
+  ASSERT_EQ(0, rgb.b);
 }
 
 TEST(HSVtoRGB, FullCyan)
 {
   // arrange
-  uint8_t r, g, b;
-  const uint8_t h = 126, s = 255, v = 255;
-
+  const HSVColor hsv = { 126,255,255 };
+  
   // act
-  HSVtoRGB(h, s, v, r, g, b);
+  RGBColor rgb = HSVtoRGB(hsv);
 
   // assert
-  ASSERT_EQ(0, r);
-  ASSERT_EQ(254, g);
-  ASSERT_EQ(255, b);
+  ASSERT_EQ(0, rgb.r);
+  ASSERT_EQ(254, rgb.g);
+  ASSERT_EQ(255, rgb.b);
 }
 
 TEST(HSVtoRGB, FullBlue)
 {
   // arrange
-  uint8_t r, g, b;
-  const uint8_t h = 168, s = 255, v = 255;
-
+  const HSVColor hsv = { 168,255,255 };
+  
   // act
-  HSVtoRGB(h, s, v, r, g, b);
+  RGBColor rgb = HSVtoRGB(hsv);
 
   // assert
-  ASSERT_EQ(0, r);
-  ASSERT_EQ(0, g);
-  ASSERT_EQ(255, b);
+  ASSERT_EQ(0, rgb.r);
+  ASSERT_EQ(0, rgb.g);
+  ASSERT_EQ(255, rgb.b);
 }
 
 TEST(HSVtoRGB, FullMagenta)
 {
   // arrange
-  uint8_t r, g, b;
-  const uint8_t h = 210, s = 255, v = 255;
-
+  const HSVColor hsv = { 210,255,255 };
+  
   // act
-  HSVtoRGB(h, s, v, r, g, b);
+  RGBColor rgb = HSVtoRGB(hsv);
 
   // assert
-  ASSERT_EQ(255, r);
-  ASSERT_EQ(0, g);
-  ASSERT_EQ(254, b);
+  ASSERT_EQ(255, rgb.r);
+  ASSERT_EQ(0, rgb.g);
+  ASSERT_EQ(254,rgb.b);
 }
 
 TEST(ImageStatistics, Constructor)
