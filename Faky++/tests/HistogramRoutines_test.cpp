@@ -90,3 +90,102 @@ TEST(SmoothHistogram, Pulse_end)
   }
   ASSERT_EQ(15000, stats.mHueHistogramTotal);
 }
+TEST(GetMode_Hue, modeBegin)
+{
+  // Arrange
+  ImageStatistics stats;
+  stats.mHueHistogram[0] = 1234;
+
+  // Act
+  size_t mode = GetMode_Hue(stats);
+
+  // Assert
+  ASSERT_EQ(0, mode);
+}
+
+TEST(GetMode_Hue, modeEnd)
+{
+  // Arrange
+  ImageStatistics stats;
+  stats.mHueHistogram[ColorRoutines::HUE_MAX] = 1234;
+
+  // Act
+  size_t mode = GetMode_Hue(stats);
+
+  // Assert
+  ASSERT_EQ(ColorRoutines::HUE_MAX, mode);
+}
+
+TEST(GetMode_Hue, modeMiddle)
+{
+  // Arrange
+  ImageStatistics stats;
+  stats.mHueHistogram[ColorRoutines::HUE_MAX/2] = 1234;
+  stats.mHueHistogram[ColorRoutines::HUE_MAX] = 345;
+
+  // Act
+  size_t mode = GetMode_Hue(stats);
+
+  // Assert
+  ASSERT_EQ(ColorRoutines::HUE_MAX/2, mode);
+}
+
+TEST(GetModal_Value, flatline)
+{
+  // Arrange
+  ImageStatistics stats;
+  
+  for (int i = 0; i < 256; ++ i)
+    stats.mValueHistogram[i] = 1;
+
+  // Act
+  size_t modal = GetModal_Value(stats);
+
+  // Assert
+  ASSERT_EQ(127, modal);
+}
+
+TEST(GetModal_Value, empty)
+{
+  // Arrange
+  ImageStatistics stats;
+  
+  // Act
+  size_t modal = GetModal_Value(stats);
+
+  // Assert
+  ASSERT_EQ(0, modal);
+}
+
+TEST(GetModal_Value, singlePeak)
+{
+  // Arrange
+  ImageStatistics stats;
+  
+  for (int i = 120; i < 127; ++ i)
+    stats.mValueHistogram[i] = 100;
+
+  // Act
+  size_t modal = GetModal_Value(stats);
+
+  // Assert
+  ASSERT_EQ(123, modal);
+}
+
+TEST(GetModal_Value, twoPeaks)
+{
+  // Arrange
+  ImageStatistics stats;
+  
+  for (int i = 0; i < 256; ++ i)
+    stats.mValueHistogram[i] = 1;
+
+  stats.mValueHistogram[64] = 10000;
+  stats.mValueHistogram[192] = 10000;
+
+  // Act
+  size_t modal = GetModal_Value(stats);
+
+  // Assert
+  ASSERT_EQ(127, modal);
+}
