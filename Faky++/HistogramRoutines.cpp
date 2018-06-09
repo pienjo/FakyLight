@@ -67,3 +67,29 @@ size_t HistogramRoutines::GetModal_Value(const ImageStatistics &iStatistics)
 
   return 0; // unreached
 }
+
+void HistogramRoutines::ClearLowerValueBuckets(ImageStatistics &ioStatistics, size_t nrBuckets)
+{
+  for (int i = 0; i < nrBuckets && i < 256; ++i)
+  {
+    ioStatistics.mValueHistogram[i] = 0;
+  }
+};
+
+ColorRoutines::HSVColor HistogramRoutines::GetDominantColor(const ImageStatistics &statistics)
+{
+  ColorRoutines::HSVColor hsvColor;
+  
+  // The hue is the mode of the hue histogram
+  hsvColor.h = GetMode_Hue(statistics);
+  
+  // The magic formula: The ratio of the surface of the mode bin and the total surface of the hue histogram, multiplied
+  // by the average saturation.
+
+  uint32_t saturation = 256 * statistics.mHueHistogram[hsvColor.h] / statistics.mHueHistogramTotal;
+  saturation = (saturation * (uint32_t) statistics.mAverageSaturation) / 128;
+
+  hsvColor.s = (uint8_t) std::max( (uint32_t) 255, saturation);
+
+  return hsvColor;
+}
