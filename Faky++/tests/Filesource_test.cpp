@@ -10,7 +10,7 @@ TEST(FileSource, constructor_single)
   FileSource test("Foo.pnm");
 
   // Assert
-  ASSERT_EQ(1, test.size());
+  ASSERT_EQ(1U, test.size());
 }
 
 TEST(FileSource, constructor_multiple)
@@ -23,7 +23,7 @@ TEST(FileSource, constructor_multiple)
   FileSource test(files);
 
   // Assert
-  ASSERT_EQ(2, test.size());
+  ASSERT_EQ(2U, test.size());
 }
 
 TEST(FileSource, fileNotFound)
@@ -47,7 +47,7 @@ TEST(FileSource, fileFound)
   destinationImage = test.FetchImage();
   } );
 
-  ASSERT_NE(0, destinationImage.length());
+  ASSERT_NE(0u, destinationImage.length());
   ASSERT_NE(nullptr, destinationImage.data());
 }
 

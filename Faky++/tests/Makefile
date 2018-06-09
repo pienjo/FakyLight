@@ -4,7 +4,7 @@ SOURCES=main.cpp ../Image.cpp Image_test.cpp ../FileSource.cpp Filesource_test.c
 
 OBJECTS_1=$(SOURCES:%.cpp=obj/%.o)
 OBJECTS=$(OBJECTS_1:../%.c=obj/%.o) obj/gtest-all.o
-CFLAGS=-g -I $(GTEST_DIR)/include -I ..
+CFLAGS=-g -Wall -Werror -I $(GTEST_DIR)/include -I ..
 LDFLAGS=-pthread
 
 DEPS=$(OBJECTS:.o=.d)

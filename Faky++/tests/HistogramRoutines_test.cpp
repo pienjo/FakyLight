@@ -27,7 +27,7 @@ TEST(SmoothHistogram, Pulse_center)
 
   // Assert
 
-  for (int i = 0; i < ImageStatistics::HueHistogramSize; ++i)
+  for (uint32_t i = 0; i < ImageStatistics::HueHistogramSize; ++i)
   {
     if (i >= ImageStatistics::HueHistogramSize/2 - kernelSize && i <= ImageStatistics::HueHistogramSize/2+kernelSize)
     {
@@ -38,7 +38,7 @@ TEST(SmoothHistogram, Pulse_center)
       EXPECT_PRED_FORMAT3(AssertTableContents, 0, stats.mHueHistogram[i], i);
     }
   }
-  ASSERT_EQ(15000, stats.mHueHistogramTotal);
+  ASSERT_EQ(15000U, stats.mHueHistogramTotal);
 }
 
 TEST(SmoothHistogram, Pulse_start)
@@ -53,7 +53,7 @@ TEST(SmoothHistogram, Pulse_start)
 
   // Assert
 
-  for (int i = 0; i < ImageStatistics::HueHistogramSize; ++i)
+  for (uint32_t i = 0; i < ImageStatistics::HueHistogramSize; ++i)
   {
     if (i >= ImageStatistics::HueHistogramSize - kernelSize || i <= kernelSize)
     {
@@ -64,7 +64,7 @@ TEST(SmoothHistogram, Pulse_start)
       EXPECT_PRED_FORMAT3(AssertTableContents, 0, stats.mHueHistogram[i], i);
     }
   }
-  ASSERT_EQ(15000, stats.mHueHistogramTotal);
+  ASSERT_EQ(15000U, stats.mHueHistogramTotal);
 }
 
 TEST(SmoothHistogram, Pulse_end)
@@ -79,7 +79,7 @@ TEST(SmoothHistogram, Pulse_end)
 
   // Assert
 
-  for (int i = 0; i < ImageStatistics::HueHistogramSize; ++i)
+  for (uint32_t i = 0; i < ImageStatistics::HueHistogramSize; ++i)
   {
     if (i >= ImageStatistics::HueHistogramSize - kernelSize - 1 || i <= kernelSize - 1)
     {
@@ -90,7 +90,7 @@ TEST(SmoothHistogram, Pulse_end)
       EXPECT_PRED_FORMAT3(AssertTableContents, 0, stats.mHueHistogram[i], i);
     }
   }
-  ASSERT_EQ(15000, stats.mHueHistogramTotal);
+  ASSERT_EQ(15000U, stats.mHueHistogramTotal);
 }
 TEST(GetMode_Hue, modeBegin)
 {
@@ -102,7 +102,7 @@ TEST(GetMode_Hue, modeBegin)
   size_t mode = GetMode_Hue(stats);
 
   // Assert
-  ASSERT_EQ(0, mode);
+  ASSERT_EQ(0U, mode);
 }
 
 TEST(GetMode_Hue, modeEnd)
@@ -129,7 +129,7 @@ TEST(GetMode_Hue, modeMiddle)
   size_t mode = GetMode_Hue(stats);
 
   // Assert
-  ASSERT_EQ(ColorRoutines::HUE_MAX/2, mode);
+  ASSERT_EQ((size_t) ColorRoutines::HUE_MAX/2, mode);
 }
 
 TEST(GetModal_Value, flatline)
@@ -144,7 +144,7 @@ TEST(GetModal_Value, flatline)
   size_t modal = GetModal_Value(stats);
 
   // Assert
-  ASSERT_EQ(127, modal);
+  ASSERT_EQ(127U, modal);
 }
 
 TEST(GetModal_Value, empty)
@@ -156,7 +156,7 @@ TEST(GetModal_Value, empty)
   size_t modal = GetModal_Value(stats);
 
   // Assert
-  ASSERT_EQ(0, modal);
+  ASSERT_EQ(0U, modal);
 }
 
 TEST(GetModal_Value, singlePeak)
@@ -171,7 +171,7 @@ TEST(GetModal_Value, singlePeak)
   size_t modal = GetModal_Value(stats);
 
   // Assert
-  ASSERT_EQ(123, modal);
+  ASSERT_EQ(123U, modal);
 }
 
 TEST(GetModal_Value, twoPeaks)
@@ -189,5 +189,5 @@ TEST(GetModal_Value, twoPeaks)
   size_t modal = GetModal_Value(stats);
 
   // Assert
-  ASSERT_EQ(127, modal);
+  ASSERT_EQ(127U, modal);
 }

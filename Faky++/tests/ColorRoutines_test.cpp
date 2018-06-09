@@ -236,13 +236,13 @@ TEST(ImageStatistics, Constructor)
 
   // Assert
   for (int i = 0; i < ImageStatistics::HueHistogramSize; ++i)
-    ASSERT_EQ(0, stats.mHueHistogram[i]);
+    ASSERT_EQ(0U, stats.mHueHistogram[i]);
 
   for (int i = 0; i < 256; ++i)
-    ASSERT_EQ(0, stats.mValueHistogram[i]);
+    ASSERT_EQ(0U, stats.mValueHistogram[i]);
    
-  ASSERT_EQ(0, stats.mHueHistogramTotal);
-  ASSERT_EQ(0, stats.mAverageSaturation);
+  ASSERT_EQ(0U, stats.mHueHistogramTotal);
+  ASSERT_EQ(0U, stats.mAverageSaturation);
 }
 TEST(getHueValueHistogram, ShadesofGray)
 {
@@ -260,9 +260,9 @@ TEST(getHueValueHistogram, ShadesofGray)
 
   // Assert
   ASSERT_EQ(0, stats.mAverageSaturation);
-  ASSERT_EQ(1, stats.mValueHistogram[255]);
-  ASSERT_EQ(1, stats.mValueHistogram[0x7f]);
-  ASSERT_EQ(1, stats.mValueHistogram[0]);
+  ASSERT_EQ(1U, stats.mValueHistogram[255]);
+  ASSERT_EQ(1U, stats.mValueHistogram[0x7f]);
+  ASSERT_EQ(1U, stats.mValueHistogram[0]);
 }
 TEST(getHueValueHistogram, ShadesOfRed)
 {
@@ -280,8 +280,8 @@ TEST(getHueValueHistogram, ShadesOfRed)
 
   // Assert
   ASSERT_EQ(211, stats.mAverageSaturation);
-  ASSERT_EQ(2, stats.mValueHistogram[255]);
-  ASSERT_EQ(1, stats.mValueHistogram[0x7f]);
+  ASSERT_EQ(2U, stats.mValueHistogram[255]);
+  ASSERT_EQ(1U, stats.mValueHistogram[0x7f]);
   
   for (int h = 1; h < ImageStatistics::HueHistogramSize; ++h)
   {
@@ -309,8 +309,8 @@ TEST(getHueValueHistogram, ShadesOfGreen)
 
   // Assert
   ASSERT_EQ(211, stats.mAverageSaturation);
-  ASSERT_EQ(2, stats.mValueHistogram[255]);
-  ASSERT_EQ(1, stats.mValueHistogram[0x7f]);
+  ASSERT_EQ(2U, stats.mValueHistogram[255]);
+  ASSERT_EQ(1U, stats.mValueHistogram[0x7f]);
   
   for (int h = 1; h < ImageStatistics::HueHistogramSize; ++h)
   {

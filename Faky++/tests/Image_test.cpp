@@ -21,7 +21,7 @@ TEST(Image, constructor_nolength)
   Image test;
 
   // Assert
-  ASSERT_EQ(0, test.length());
+  ASSERT_EQ((uint32_t) 0, test.length());
 }
 
 
@@ -33,7 +33,7 @@ TEST(Image, constructor_noWidth)
   Image test;
 
   // Assert
-  ASSERT_EQ(0, test.Width());
+  ASSERT_EQ((uint32_t) 0, test.Width());
 }
 
 TEST(Image, constructor_noHeight)
@@ -44,7 +44,7 @@ TEST(Image, constructor_noHeight)
   Image test;
 
   // Assert
-  ASSERT_EQ(0, test.Height());
+  ASSERT_EQ((uint32_t) 0, test.Height());
 }
 
 TEST(Image, Claim)
@@ -58,7 +58,7 @@ TEST(Image, Claim)
   // Assert
   
   ASSERT_NE(nullptr, test.data());
-  ASSERT_EQ(12 * 34 * 3, test.length());
+  ASSERT_EQ((uint32_t) (12 * 34 * 3) , test.length());
 }
 
 TEST(Image, copyConstructor)
@@ -92,7 +92,7 @@ TEST(Image, moveConstructor)
   ASSERT_EQ(originalLength, destinationImage.length());
   ASSERT_EQ(originalData, destinationImage.data());
 
-  ASSERT_EQ(0, sourceImage.length());
+  ASSERT_EQ((uint32_t) 0, sourceImage.length());
   ASSERT_EQ(nullptr, sourceImage.data());
 }
 
@@ -123,5 +123,5 @@ TEST(Image, moveAssignment)
 
   // Assert
   ASSERT_EQ(nullptr, sourceImage.data());
-  ASSERT_EQ(0, sourceImage.length());
+  ASSERT_EQ((uint32_t) 0, sourceImage.length());
 }

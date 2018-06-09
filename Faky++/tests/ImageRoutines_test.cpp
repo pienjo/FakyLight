@@ -95,7 +95,6 @@ TEST_F(ImageRoutinesTest,SetRect_Green_OneColumn)
 
   // Assert
   const uint8_t *d = mCanvasImage.data();
-  uint32_t l = mCanvasImage.length();
 
   uint32_t i = 0;
 
@@ -127,7 +126,6 @@ TEST_F(ImageRoutinesTest,SetRect_Blue_ColumnClips)
 
   // Assert
   const uint8_t *d = mCanvasImage.data();
-  uint32_t l = mCanvasImage.length();
 
   uint32_t i = 0;
 
@@ -179,7 +177,7 @@ TEST_F(ImageRoutinesTest,SetRect_Magenta_RowClips_right)
   }
 
   // One magenta line
-  for (int x = 0; x < mCanvasWidth; ++x)
+  for (uint32_t x = 0; x < mCanvasWidth; ++x)
   {
     EXPECT_PRED_FORMAT3( AssertTableContents, 255, d[i], i); i++;
     EXPECT_PRED_FORMAT3( AssertTableContents, 0, d[i], i); i++;
@@ -215,7 +213,7 @@ TEST_F(ImageRoutinesTest,SetRect_Cyan_RowClips_left)
   }
 
   // One cyan line
-  for (int x = 0; x < mCanvasWidth; ++x)
+  for (uint32_t x = 0; x < mCanvasWidth; ++x)
   {
     EXPECT_PRED_FORMAT3( AssertTableContents, 255, d[i], i); i++;
     EXPECT_PRED_FORMAT3( AssertTableContents, 0, d[i], i); i++;

@@ -70,7 +70,7 @@ size_t HistogramRoutines::GetModal_Value(const ImageStatistics &iStatistics)
 
 void HistogramRoutines::ClearLowerValueBuckets(ImageStatistics &ioStatistics, size_t nrBuckets)
 {
-  for (int i = 0; i < nrBuckets && i < 256; ++i)
+  for (size_t i = 0; i < nrBuckets && i < 256; ++i)
   {
     ioStatistics.mValueHistogram[i] = 0;
   }

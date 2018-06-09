@@ -47,7 +47,7 @@ Image FileSource::FetchImage()
     while (c == '#') 
     {
       while (getc(f) != '\n') ;
-	 c = getc(f);
+      c = getc(f);
     }
     ungetc(c, f);
 
