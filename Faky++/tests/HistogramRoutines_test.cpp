@@ -3,14 +3,16 @@
 
 using namespace HistogramRoutines;
 
-::testing::AssertionResult AssertTableContents(const char *m_expr, const char *n_expr, const char *index_expr, uint32_t m, uint32_t n, int index)
-{
-  if (m == n)
-    return ::testing::AssertionSuccess();
+namespace {
+  ::testing::AssertionResult AssertTableContents(const char *m_expr, const char *n_expr, const char *index_expr, uint32_t m, uint32_t n, int index)
+  {
+    if (m == n)
+      return ::testing::AssertionSuccess();
 
-  return ::testing::AssertionFailure() 
-     << m_expr << " ( " << m <<") and " 
-     << n_expr << " ( " << n <<") differ (index "<< index <<")";
+    return ::testing::AssertionFailure() 
+       << m_expr << " ( " << m <<") and " 
+       << n_expr << " ( " << n <<") differ (index "<< index <<")";
+  }
 }
 
 TEST(SmoothHistogram, Pulse_center)
