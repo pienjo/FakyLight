@@ -1,6 +1,6 @@
 GTEST_DIR=/usr/src/gtest
 
-SOURCES=main.cpp ../Image.cpp Image_test.cpp ../FileSource.cpp Filesource_test.cpp ../ColorRoutines.cpp ColorRoutines_test.cpp ../HistogramRoutines.cpp HistogramRoutines_test.cpp
+SOURCES=main.cpp ../Image.cpp Image_test.cpp ../FileSource.cpp Filesource_test.cpp ../ColorRoutines.cpp ColorRoutines_test.cpp ../HistogramRoutines.cpp HistogramRoutines_test.cpp ../ImageRoutines.cpp ImageRoutines_test.cpp
 
 OBJECTS_1=$(SOURCES:%.cpp=obj/%.o)
 OBJECTS=$(OBJECTS_1:../%.c=obj/%.o) obj/gtest-all.o
