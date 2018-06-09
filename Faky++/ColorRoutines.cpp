@@ -95,7 +95,7 @@ ColorRoutines::ImageStatistics ColorRoutines::GetImageStatistics(const Image &iI
   const uint8_t *src = iImage.data() + iImage.Pitch() * iRect.mTop;
   const int stride = iImage.Stride();
 
-  for (int y = iRect.mTop; y < std::min(iRect.mBottom, iImage.Height()); ++y, src += iImage.Pitch())
+  for (int y = iRect.mTop; y < std::min(iRect.mBottom, (int32_t) iImage.Height()); ++y, src += iImage.Pitch())
   {
     const uint8_t *src_p = src + iImage.Stride() * iRect.mLeft;
     for (int x = iRect.mLeft; x < iRect.mRight; ++x, src_p += stride)
