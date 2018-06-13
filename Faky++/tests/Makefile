@@ -20,6 +20,8 @@ clean:
 test:	$(OBJECTS)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS)
 
+-include $(DEPS)
+
 obj/%.o:	%.cpp
 	$(CXX) -MMD $(CFLAGS) -c $< -o $@
 
