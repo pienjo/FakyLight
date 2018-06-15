@@ -1,5 +1,6 @@
 #include "ColorRoutines.h"
 #include "Image.h"
+#include "ImageRoutines.h"
 
 using ColorRoutines::RGBColor;
 using ColorRoutines::HSVColor;
@@ -85,7 +86,14 @@ RGBColor ColorRoutines::HSVtoRGB( const HSVColor &hsv)
   return {hsv.v,p,q };
 }
 
-ColorRoutines::ImageStatistics ColorRoutines::GetImageStatistics(const Image &iImage, const Rect &iRect)
+ColorRoutines::ImageStatistics ColorRoutines::GetImageStatistics(const Image &iImage, const RelativeRect &iRect)
+{
+  AbsoluteRect absoluteRect = ImageRoutines::ToAbsoluteRect(iImage, iRect);
+
+  return GetImageStatistics(iImage, absoluteRect);
+}
+
+ColorRoutines::ImageStatistics ColorRoutines::GetImageStatistics(const Image &iImage, const AbsoluteRect &iRect)
 {
   ImageStatistics stats;
   

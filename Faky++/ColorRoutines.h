@@ -41,7 +41,8 @@ namespace ColorRoutines
       uint8_t mAverageSaturation;
   };
 
-  ImageStatistics GetImageStatistics(const Image &iImage, const Rect &iRect);
+  ImageStatistics GetImageStatistics(const Image &iImage, const AbsoluteRect &iRect);
+  ImageStatistics GetImageStatistics(const Image &iImage, const RelativeRect &iRect);
 };
 
 #endif

@@ -36,7 +36,7 @@ namespace {
 TEST_F(ImageRoutinesTest,SetRect_White_OnePixel)
 {
   // Arrange
-  const Rect rect = { 0,0,1,1 };
+  const AbsoluteRect rect = { 0,0,1,1 };
   RGBColor white = { 255, 255, 255 };
 
   // Act
@@ -60,7 +60,7 @@ TEST_F(ImageRoutinesTest,SetRect_White_OnePixel)
 TEST_F(ImageRoutinesTest,SetRect_Red_OneRow)
 {
   // Arrange
-  const Rect rect = { 0,0,mCanvasWidth, 1};
+  const AbsoluteRect rect = { 0,0,mCanvasWidth, 1};
   RGBColor red = { 255, 0, 0};
 
   // Act
@@ -87,7 +87,7 @@ TEST_F(ImageRoutinesTest,SetRect_Red_OneRow)
 TEST_F(ImageRoutinesTest,SetRect_Green_OneColumn)
 {
   // Arrange
-  const Rect rect = { 0,0,1, mCanvasHeight };
+  const AbsoluteRect rect = { 0,0,1, mCanvasHeight };
   RGBColor green = { 0, 255, 0};
 
   // Act
@@ -118,7 +118,7 @@ TEST_F(ImageRoutinesTest,SetRect_Green_OneColumn)
 TEST_F(ImageRoutinesTest,SetRect_Blue_ColumnClips)
 {
   // Arrange
-  const Rect rect = { 10,0,11, 2 * mCanvasHeight };
+  const AbsoluteRect rect = { 10,0,11, 2 * mCanvasHeight };
   RGBColor blue = { 0, 0, 255};
 
   // Act
@@ -158,7 +158,7 @@ TEST_F(ImageRoutinesTest,SetRect_Blue_ColumnClips)
 TEST_F(ImageRoutinesTest,SetRect_Magenta_RowClips_right)
 {
   // Arrange
-  const Rect rect = { 0,10,2 * mCanvasWidth, 11};
+  const AbsoluteRect rect = { 0,10,2 * mCanvasWidth, 11};
   RGBColor magenta = { 255, 0, 255};
 
   // Act
@@ -194,7 +194,7 @@ TEST_F(ImageRoutinesTest,SetRect_Magenta_RowClips_right)
 TEST_F(ImageRoutinesTest,SetRect_Cyan_RowClips_left)
 {
   // Arrange
-  const Rect rect = { -2,10, mCanvasWidth, 11};
+  const AbsoluteRect rect = { -2,10, mCanvasWidth, 11};
   RGBColor magenta = { 255, 0, 255};
 
   // Act
@@ -225,4 +225,34 @@ TEST_F(ImageRoutinesTest,SetRect_Cyan_RowClips_left)
   {
     EXPECT_PRED_FORMAT3( AssertTableContents, 0, d[i], i);
   }
+}
+
+TEST_F(ImageRoutinesTest, ToAbsoluteRect)
+{
+  // Arrange
+  RelativeRect input = { 0, 50, 100,75 };
+
+  // Act
+  AbsoluteRect output = ImageRoutines::ToAbsoluteRect(mCanvasImage, input);
+
+  // Assert
+  ASSERT_EQ( 0, output.mLeft );
+  ASSERT_EQ( 50, output.mTop );
+  ASSERT_EQ( 200, output.mRight);
+  ASSERT_EQ( 75, output.mBottom );
+}
+
+TEST_F(ImageRoutinesTest, ToRelativeRect)
+{
+  // Arrange
+  AbsoluteRect input = { 20, 40, 80, 90 };
+
+  // Act
+  RelativeRect output = ImageRoutines::ToRelativeRect(mCanvasImage, input);
+
+  // Assert
+  ASSERT_EQ( 10, output.mLeft );
+  ASSERT_EQ( 40, output.mTop );
+  ASSERT_EQ( 40, output.mRight);
+  ASSERT_EQ( 90, output.mBottom );
 }

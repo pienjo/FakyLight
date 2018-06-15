@@ -256,7 +256,7 @@ TEST(getHueValueHistogram, ShadesofGray)
   TestImage_T testImage(testImageContents);
 
   // Act
-  ImageStatistics stats = GetImageStatistics(testImage, Rect{ 0, 0, 3,1 });
+  ImageStatistics stats = GetImageStatistics(testImage, AbsoluteRect{ 0, 0, 3,1 });
 
   // Assert
   ASSERT_EQ(0, stats.mAverageSaturation);
@@ -276,7 +276,7 @@ TEST(getHueValueHistogram, ShadesOfRed)
   TestImage_T testImage(testImageContents);
 
   // Act
-  ImageStatistics stats = GetImageStatistics(testImage, Rect{ 0, 0, 3,1 });
+  ImageStatistics stats = GetImageStatistics(testImage, AbsoluteRect{ 0, 0, 3,1 });
 
   // Assert
   ASSERT_EQ(211, stats.mAverageSaturation);
@@ -305,7 +305,7 @@ TEST(getHueValueHistogram, ShadesOfGreen)
   TestImage_T testImage(testImageContents);
 
   // Act
-  ImageStatistics stats = GetImageStatistics(testImage, Rect{ 0, 0, 3,1 });
+  ImageStatistics stats = GetImageStatistics(testImage, AbsoluteRect{ 0, 0, 3,1 });
 
   // Assert
   ASSERT_EQ(211, stats.mAverageSaturation);
