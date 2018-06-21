@@ -10,6 +10,6 @@ class AbsoluteRect
 class RelativeRect
 {
   public:
-    int32_t mLeft, mTop, mRight, mBottom;
+    float mLeft, mTop, mRight, mBottom;
 };
 #endif
