@@ -43,12 +43,60 @@ TEST(FileSource, fileFound)
   Image destinationImage;
 
   // Act
-  ASSERT_NO_THROW( {
   destinationImage = test.FetchImage();
-  } );
-
+  
+  // Assert
   ASSERT_NE(0u, destinationImage.length());
   ASSERT_NE(nullptr, destinationImage.data());
+}
+
+TEST(FileSource, dimensionsCorrect)
+{
+  // Arrange 
+  FileSource test("../../TestImages/100nl.ppm");
+  
+  Image destinationImage;
+
+  // Act
+  destinationImage = test.FetchImage();
+
+  // Assert
+  ASSERT_EQ(320u, destinationImage.Width());
+  ASSERT_EQ(180u, destinationImage.Height());
+}
+
+TEST(FileSource, topLeftPixel)
+{
+  // Arrange 
+  FileSource test("../../TestImages/100nl.ppm");
+  
+  Image destinationImage;
+
+  // Act
+  destinationImage = test.FetchImage();
+  const uint8_t *d = destinationImage.data();
+
+  // Assert
+  ASSERT_EQ(0x11, d[0]);
+  ASSERT_EQ(0x0f, d[1]);
+  ASSERT_EQ(0x12, d[2]);
+}
+
+TEST(FileSource, bottomRightPixel)
+{
+  // Arrange 
+  FileSource test("../../TestImages/100nl.ppm");
+  
+  Image destinationImage;
+
+  // Act
+  destinationImage = test.FetchImage();
+  const uint8_t *d = destinationImage.data() + destinationImage.length() - 3;
+
+  // Assert
+  ASSERT_EQ(0x11, d[0]);
+  ASSERT_EQ(0x0f, d[1]);
+  ASSERT_EQ(0x12, d[2]);
 }
 
 TEST(FileSource, fileFound_secondInvocation)

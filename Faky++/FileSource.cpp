@@ -52,7 +52,7 @@ Image FileSource::FetchImage()
     ungetc(c, f);
 
     uint32_t width, height, format;
-    if (3 != fscanf(f, "%d %d %d", &width, &height, &format))
+    if (3 != fscanf(f, "%d %d %d\n", &width, &height, &format))
     {
       throw std::logic_error("Error parsing image header");
     }
