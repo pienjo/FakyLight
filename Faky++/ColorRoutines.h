@@ -15,6 +15,10 @@ namespace ColorRoutines
   struct RGBColor 
   {
     uint8_t r,g,b;
+    bool operator==(const RGBColor &other) const
+    {
+      return r == other.r && b == other.b && g == other.g;
+    }
   };
 
   struct HSVColor
