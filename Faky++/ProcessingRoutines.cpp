@@ -28,7 +28,7 @@ void ProcessingRoutines::Process(ImageSource &source, ColorSink &sink)
     {
       ColorRoutines::ImageStatistics stats = ColorRoutines::GetImageStatistics(sourceImage, r);
       
-      //HistogramRoutines::SmoothHueHistogram(stats, SMOOTH_KERNEL_SIZE );
+      HistogramRoutines::SmoothHueHistogram(stats, SMOOTH_KERNEL_SIZE );
       HistogramRoutines::ClearLowerValueBuckets(stats, MIN_VALUE_BUCKET );
       ColorRoutines::HSVColor dominantHSV = HistogramRoutines::GetDominantColor(stats);
       
