@@ -240,134 +240,100 @@ const RegressionData myRegressionData[] =
   { "../../TestImages/100nl.ppm", 
     "../../TestImages/100nl-out-pp.ppm",
     {
-      { 130, 46, 0 },
-      { 255, 96, 0 },
-      { 255, 96, 0 },
+      { 130, 52, 0 },
       { 255, 102, 0 },
       { 255, 102, 0 },
-      { 255, 90, 0 },
-      { 255, 90, 0 },
       { 255, 102, 0 },
-      { 130, 46, 0 }
+      { 255, 72, 0 },
+      { 255, 72, 0 },
+      { 255, 60, 0 },
+      { 255, 78, 0 },
+      { 130, 43, 0 }
     }
   },
   { "../../TestImages/bamigo.ppm", 
     "../../TestImages/bamigo-out-pp.ppm",
     {
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}
+      { 120, 116, 124}, 
+      { 152, 146, 159}, 
+      { 146, 138, 154}, 
+      { 152, 145, 160}, { 156, 150, 164}, 
+      { 156, 150, 164}, 
+      { 152, 145, 160}, 
+      { 160, 154, 166}, 
+      { 105, 101, 110}
     }
   },
   { "../../TestImages/discovery.ppm", 
     "../../TestImages/discovery-out-pp.ppm",
     {
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}
+      { 138, 136, 137}, 
+      { 255, 247, 254},
+      { 255, 244, 254},
+      { 255, 244, 254},
+      { 255, 246, 252},
+      { 255, 244, 254},
+      { 255, 244, 254},
+      { 255, 247, 254},
+      { 135, 132, 134}
     }
   },
   { "../../TestImages/startrek/input.ppm", 
     "../../TestImages/startrek/input-out-pp.ppm",
     {
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}
+      { 124, 121, 112},
+      { 179, 164, 158},
+      { 47, 172, 179 },
+      { 75, 141, 148 },
+      { 139, 119, 109 },
+      { 136, 94, 92 },
+      { 145, 88, 76 },
+      { 146, 82, 69 },
+      { 157, 79, 63 }
     }
   },
   { "../../TestImages/startrek/input1.ppm", 
     "../../TestImages/startrek/input1-out-pp.ppm",
     {
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}
+      { 118, 122, 126},
+      { 100, 113, 127},
+      { 51, 95, 137 },
+      { 73, 102, 144 },
+      { 140, 110, 104 },
+      {102, 111, 130 },
+      { 96, 103, 132 },
+      { 78, 97, 144 },
+      { 113, 115, 119 }
     }
   },
   { "../../TestImages/americans1/input1.ppm", 
     "../../TestImages/americans1/input1-out-pp.ppm",
     {
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}
+      {131,108,99},
+      {154,87,77},
+      {154,114,94},
+      {165,125,108},
+      {255,233,209},
+      {231,208,183},
+      {143,110,92},
+      {147,99,83},
+      {147,111,98},
     }
   },
   { "../../TestImages/americans1/input2.ppm", 
     "../../TestImages/americans1/input2-out-pp.ppm",
     {
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}
+      {131,108,99},
+      {154,85,75},
+      {154,114,92},
+      {165,122,103},
+      {255,233,209},
+      {231,207,181},
+      {143,111,93},
+      {147,107,91},
+      {147,110,95},
     }
   },
-  { "../../TestImages/americans1/input3.ppm", 
-    "../../TestImages/americans1/input3-out-pp.ppm",
-    {
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}
-    }
-  },
-  { "../../TestImages/americans1/input4.ppm", 
-    "../../TestImages/americans1/input4-out-pp.ppm",
-    {
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}
-    }
-  },
-  { "../../TestImages/americans1/input5.ppm", 
-    "../../TestImages/americans1/input5-out-pp.ppm",
-    {
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}, 
-      { 0, 0, 0}
-    }
-  }
 };
 
 class ImageRegressionTest : public ::testing::Test, public ::testing::WithParamInterface<RegressionData>
@@ -434,7 +400,7 @@ TEST_P(ImageRegressionTest, Rect_0)
   ASSERT_EQ(GetParam().mColors[0], mResult.mColors[0]);
 }
 
-TEST_P(ImageRegressionTest, DISABLED_Rect_1)
+TEST_P(ImageRegressionTest, Rect_1)
 {
   // Arrange
 
@@ -446,7 +412,7 @@ TEST_P(ImageRegressionTest, DISABLED_Rect_1)
   ASSERT_EQ(GetParam().mColors[1], mResult.mColors[1]);
 }
 
-TEST_P(ImageRegressionTest, DISABLED_Rect_2)
+TEST_P(ImageRegressionTest, Rect_2)
 {
   // Arrange
 
@@ -458,7 +424,7 @@ TEST_P(ImageRegressionTest, DISABLED_Rect_2)
   ASSERT_EQ(GetParam().mColors[2], mResult.mColors[2]);
 }
 
-TEST_P(ImageRegressionTest, DISABLED_Rect_3)
+TEST_P(ImageRegressionTest, Rect_3)
 {
   // Arrange
 
@@ -470,7 +436,7 @@ TEST_P(ImageRegressionTest, DISABLED_Rect_3)
   ASSERT_EQ(GetParam().mColors[3], mResult.mColors[3]);
 }
 
-TEST_P(ImageRegressionTest, DISABLED_Rect_4)
+TEST_P(ImageRegressionTest, Rect_4)
 {
   // Arrange
 
@@ -482,7 +448,7 @@ TEST_P(ImageRegressionTest, DISABLED_Rect_4)
   ASSERT_EQ(GetParam().mColors[4], mResult.mColors[4]);
 }
 
-TEST_P(ImageRegressionTest, DISABLED_Rect_5)
+TEST_P(ImageRegressionTest, Rect_5)
 {
   // Arrange
 
@@ -494,7 +460,7 @@ TEST_P(ImageRegressionTest, DISABLED_Rect_5)
   ASSERT_EQ(GetParam().mColors[5], mResult.mColors[5]);
 }
 
-TEST_P(ImageRegressionTest, DISABLED_Rect_6)
+TEST_P(ImageRegressionTest, Rect_6)
 {
   // Arrange
 
@@ -506,7 +472,7 @@ TEST_P(ImageRegressionTest, DISABLED_Rect_6)
   ASSERT_EQ(GetParam().mColors[6], mResult.mColors[6]);
 }
 
-TEST_P(ImageRegressionTest, DISABLED_Rect_7)
+TEST_P(ImageRegressionTest, Rect_7)
 {
   // Arrange
 
@@ -518,7 +484,7 @@ TEST_P(ImageRegressionTest, DISABLED_Rect_7)
   ASSERT_EQ(GetParam().mColors[7], mResult.mColors[7]);
 }
 
-TEST_P(ImageRegressionTest, DISABLED_Rect_8)
+TEST_P(ImageRegressionTest, Rect_8)
 {
   // Arrange
 
