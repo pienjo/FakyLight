@@ -86,10 +86,16 @@ ColorRoutines::HSVColor HistogramRoutines::GetDominantColor(const ImageStatistic
   // The magic formula: The ratio of the surface of the mode bin and the total surface of the hue histogram, multiplied
   // by the average saturation.
 
-  uint32_t saturation = 256 * statistics.mHueHistogram[hsvColor.h] / statistics.mHueHistogramTotal;
-  saturation = (saturation * (uint32_t) statistics.mAverageSaturation) / 128;
+  if (statistics.mHueHistogramTotal > 0)
+  {
+    uint32_t saturation = 256 * 15 * statistics.mHueHistogram[hsvColor.h] / statistics.mHueHistogramTotal;
+    saturation = (saturation * (uint32_t) statistics.mAverageSaturation) / 128;
 
-  hsvColor.s = (uint8_t) std::max( (uint32_t) 255, saturation);
-
+    hsvColor.s = (uint8_t) std::min( (uint32_t) 255, saturation);
+  }
+  
+  uint32_t modalValue = GetModal_Value(statistics);
+  
+  hsvColor.v  = (uint8_t) std::min ((uint32_t) 255,  modalValue + 96); // Add offset.
   return hsvColor;
 }
