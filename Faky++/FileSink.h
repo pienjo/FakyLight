@@ -11,7 +11,7 @@ class FileSink : public ColorSink
     ~FileSink();
 
     void SetCanvas(const Image &pImage);
-    void Flush();	
+    void Flush() override;	
     virtual void SetColor(const RelativeRect &iRect, const ColorRoutines::RGBColor &iColor) override;
 
   private:

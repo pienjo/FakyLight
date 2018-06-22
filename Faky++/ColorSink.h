@@ -8,6 +8,7 @@ class ColorSink
   public:
     virtual ~ColorSink() { } 
     virtual void SetColor(const RelativeRect &iRect, const ColorRoutines::RGBColor &iColor) = 0;
+    virtual void Flush() = 0;
 };
 
 #endif

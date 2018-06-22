@@ -13,12 +13,14 @@ DEPS=$(OBJECTS:.o=.d)
 all:	fetch
 
 clean: 
-	rm -rf $(OBJECTS) $(DEPS) fetch obj/fetch-main.o
+	rm -rf $(OBJECTS) $(DEPS) fetch obj/fetch-main.*
 
 fetch:	$(OBJECTS) obj/fetch-main.o
 	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS) obj/fetch-main.o
+	strip $@
 
 -include $(DEPS)
+-include obj/fetch-main.d
 
 obj/%.o:	%.cpp
 	$(CXX) -MMD $(CFLAGS) -c $< -o $@

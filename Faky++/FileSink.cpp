@@ -10,7 +10,6 @@ FileSink::FileSink(const std::string &pFileName)
 
 FileSink::~FileSink()
 {
-  Flush();
 }
 
 void FileSink::Flush()

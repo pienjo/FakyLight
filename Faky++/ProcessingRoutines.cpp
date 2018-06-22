@@ -34,6 +34,8 @@ void ProcessingRoutines::Process(ImageSource &source, ColorSink &sink)
       
       sink.SetColor(r, ColorRoutines::HSVtoRGB(dominantHSV));
     }
+
+    sink.Flush();
   }
   catch ( ImageSource::timeout_error &e )
   {
