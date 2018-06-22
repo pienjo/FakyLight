@@ -1,6 +1,7 @@
 #include "ImageRoutines.h"
 #include <stdio.h>
 #include <algorithm>
+#include <turbojpeg.h>
 
 void ImageRoutines::SetRect(Image &ioImage, const RelativeRect &iRect, const ColorRoutines::RGBColor &iColor)
 {
@@ -48,4 +49,41 @@ RelativeRect ImageRoutines::ToRelativeRect(const Image &iImage, const AbsoluteRe
   ar.mLeft = (100 * iAbsoluteRect.mLeft + w/2) / w;
   ar.mRight = (100 * iAbsoluteRect.mRight + w/2) / w;
   return ar;
+}
+
+void ImageRoutines::WritePPM(const Image &iImage, const std::string &iFilename)
+{
+  if (!iFilename.empty() && iImage.length() > 0)
+  {
+    FILE *outfile = fopen(iFilename.c_str(), "wb");
+    if (outfile)
+    {
+      fprintf(outfile, "P6\n%d %d\n255\n", iImage.Width(), iImage.Height());
+      fwrite(iImage.data(), iImage.length(), 1, outfile);
+      fclose(outfile);
+    }
+  }
+}
+
+Image ImageRoutines::ImageFromJPEG(const std::string &iJpegStream)
+{
+  Image returnValue;
+
+  tjhandle decompressor = tjInitDecompress();
+  
+  int width, height, dummy, dummy1;
+
+  if (0 == tjDecompressHeader3(decompressor, (const uint8_t *)iJpegStream.data(), iJpegStream.size(), &width, &height, &dummy, &dummy1))
+  {
+    returnValue.Claim(width, height);
+    if (0 != tjDecompress2(decompressor, (const uint8_t *)iJpegStream.data(), iJpegStream.size(), returnValue.data(), width, returnValue.Pitch(), height,TJPF_RGB, TJFLAG_FASTDCT))
+    {
+      fprintf(stderr, "Error decoding image");
+      returnValue.Release();
+    }
+  }
+
+  tjDestroy(decompressor);
+
+  return returnValue;
 }
