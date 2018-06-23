@@ -229,11 +229,6 @@ namespace
     os << d.mFilename;
     return os;
   }
-  std::ostream & operator<< (::std::ostream &os, const RGBColor &d)
-  {
-    os << "(" << (int)d.r << "," << (int)d.g << "," << (int)d.b <<")";
-    return os;
-  }
 }
 
 const RegressionData myRegressionData[] =

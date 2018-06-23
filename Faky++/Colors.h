@@ -1,6 +1,7 @@
 #ifndef COLORS_H
 #define COLORS_H
 #include <cstdint>
+#include <iostream>
 
 class RGBColor 
 {
@@ -31,11 +32,23 @@ class HSVColor
     {
       return !(other == *this);
     }
-
+    
     enum 
     {
       HUE_MAX = 252
     };
 };
+
+inline std::ostream & operator<< (::std::ostream &os, const RGBColor &d)
+{
+  os << "(" << (int)d.r << "," << (int)d.g << "," << (int)d.b <<")";
+  return os;
+}
+
+inline std::ostream & operator<< (::std::ostream &os, const HSVColor &d)
+{
+  os << "(" << (int)d.v << "," << (int)d.s << "," << (int)d.v <<")";
+  return os;
+}
 
 #endif
