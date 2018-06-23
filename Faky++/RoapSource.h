@@ -4,6 +4,7 @@
 #include "ImageSource.h"
 #include <string>
 #include <curlpp/cURLpp.hpp>
+#include <curlpp/Easy.hpp>
 
 class RoapSource : public ImageSource
 {
@@ -16,7 +17,6 @@ class RoapSource : public ImageSource
   private:
     void PerformAuthenticationRequest();
     
-    
     static curlpp::Cleanup mCurlCleanup;
     std::string mHostName;
     uint32_t mAuthenticationCookie;
@@ -26,6 +26,8 @@ class RoapSource : public ImageSource
       REQUEST_WIDTH = 320,
       REQUEST_HEIGHT = 180
     };
+    
+    cURLpp::Easy *mFetchRequest;  
 };
 
 #endif

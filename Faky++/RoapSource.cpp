@@ -1,6 +1,5 @@
 #include "RoapSource.h"
 #include "ImageRoutines.h"
-#include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 #include <curlpp/Infos.hpp>
 #include <sstream>
@@ -8,25 +7,31 @@
 RoapSource::RoapSource(const std::string &pHostName, uint32_t pAuthenticationCookie)
   : mHostName(pHostName)
   , mAuthenticationCookie(pAuthenticationCookie)
+  , mFetchRequest(nullptr)
 {
-  PerformAuthenticationRequest();
 }
 
 RoapSource::~RoapSource()
 {
+  delete mFetchRequest;
 }
 
 Image RoapSource::FetchImage() 
 {
-  cURLpp::Easy fetchRequest;
+  if (mFetchRequest == nullptr)
+  {
+    mFetchRequest = new cURLpp::Easy;
 
-  std::ostringstream requestStream;
+    std::ostringstream requestStream;
+    
+    requestStream << "http://" << mHostName << ":8080/roap/api/data?target=screen_image&width="<<REQUEST_WIDTH<<"&height="<<REQUEST_HEIGHT<<"&type=0";
 
-  requestStream << "http://" << mHostName << ":8080/roap/api/data?target=screen_image&width="<<REQUEST_WIDTH<<"&height="<<REQUEST_HEIGHT<<"&type=0";
-
-  fetchRequest.setOpt<cURLpp::Options::Url>(requestStream.str());
-  fetchRequest.setOpt<cURLpp::Options::HttpGet>(true);
-  
+    mFetchRequest->setOpt<cURLpp::Options::Url>(requestStream.str());
+    mFetchRequest->setOpt<cURLpp::Options::HttpGet>(true);
+    std::list<std::string> header;
+    header.push_back("Connection: keep-alive");
+    mFetchRequest->setOpt<cURLpp::Options::HttpHeader>(header);
+  } 
   std::string result;
 
   try
@@ -34,10 +39,10 @@ Image RoapSource::FetchImage()
     for (;; )
     {
       std::ostringstream resultStream;
-      fetchRequest.setOpt<cURLpp::Options::WriteStream>(&resultStream);
-      fetchRequest.perform();
+      mFetchRequest->setOpt<cURLpp::Options::WriteStream>(&resultStream);
+      mFetchRequest->perform();
 
-      int status = cURLpp::Infos::ResponseCode::get(fetchRequest);
+      int status = cURLpp::Infos::ResponseCode::get(*mFetchRequest);
       if (status == 200)
       {
 	// Success
