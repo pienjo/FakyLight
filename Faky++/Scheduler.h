@@ -5,6 +5,7 @@
 #include "ColorSink.h"
 
 #include <atomic>
+#include <thread>
 
 class Scheduler
 {
@@ -15,6 +16,12 @@ class Scheduler
   private:
     ImageSource &mSource;
     ColorSink &mSink;
+
+    void RetrieveLoop();
+    void CalculationLoop();
+    void DiagnosticsLoop();
+
+    std::atomic<uint32_t> mNrFramesRetrieved;
 };
 
 #endif

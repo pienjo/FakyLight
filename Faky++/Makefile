@@ -3,9 +3,9 @@ SOURCES=RoapSource.cpp FileSink.cpp ColorRoutines.cpp HistogramRoutines.cpp Imag
 #OBJECTS_1=$(SOURCES:../%.cpp=obj/%.o)
 OBJECTS_2=$(SOURCES:%.cpp=obj/%.o)
 OBJECTS=$(OBJECTS_2:../%.c=obj/%.o) 
-CFLAGS=-O3 -Wall -Werror $(shell pkg-config --cflags curlpp)
+CFLAGS=-g -Wall -Werror $(shell pkg-config --cflags curlpp)
 #LDFLAGS=$(shell pkg-config --libs curlpp)
-LDFLAGS=-lcurl -lcurlpp -lm -lturbojpeg
+LDFLAGS=-lcurl -lcurlpp -lm -lturbojpeg -lpthread
 DEPS=$(OBJECTS:.o=.d)
 
 .PHONY: all clean 
@@ -16,12 +16,12 @@ clean:
 	rm -rf $(OBJECTS) $(DEPS) fetch obj/fetch-main.*
 
 fetch:	$(OBJECTS) obj/fetch-main.o
-	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS) obj/fetch-main.o
-	strip $@
+	$(CXX) -o $@ $(OBJECTS) obj/fetch-main.o $(LDFLAGS) 
+	#strip $@
 
 stream:	$(OBJECTS) obj/stream-main.o
-	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS) obj/stream-main.o
-	strip $@
+	$(CXX) -o $@ $(OBJECTS) obj/stream-main.o $(LDFLAGS)
+	#strip $@
 
 -include $(DEPS)
 -include obj/fetch-main.d stream-main.d
