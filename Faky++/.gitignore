@@ -1,3 +1,4 @@
 fetch
-fetch.ppm
+stream
+*.ppm
 obj/*

@@ -10,7 +10,7 @@ DEPS=$(OBJECTS:.o=.d)
 
 .PHONY: all clean 
 
-all:	fetch
+all:	fetch stream
 
 clean: 
 	rm -rf $(OBJECTS) $(DEPS) fetch obj/fetch-main.*
@@ -19,8 +19,12 @@ fetch:	$(OBJECTS) obj/fetch-main.o
 	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS) obj/fetch-main.o
 	strip $@
 
+stream:	$(OBJECTS) obj/stream-main.o
+	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS) obj/stream-main.o
+	strip $@
+
 -include $(DEPS)
--include obj/fetch-main.d
+-include obj/fetch-main.d stream-main.d
 
 obj/%.o:	%.cpp
 	$(CXX) -MMD $(CFLAGS) -c $< -o $@
