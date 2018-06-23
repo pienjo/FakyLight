@@ -76,9 +76,9 @@ void HistogramRoutines::ClearLowerValueBuckets(ImageStatistics &ioStatistics, si
   }
 };
 
-ColorRoutines::HSVColor HistogramRoutines::GetDominantColor(const ImageStatistics &statistics)
+HSVColor HistogramRoutines::GetDominantColor(const ImageStatistics &statistics)
 {
-  ColorRoutines::HSVColor hsvColor;
+  HSVColor hsvColor;
   
   // The hue is the mode of the hue histogram
   hsvColor.h = GetMode_Hue(statistics);

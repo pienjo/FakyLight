@@ -50,13 +50,14 @@ class ImageProcessingCoordinateCheck : public ::testing::Test
 	  mCanvasImage = source.FetchImage();	
 	}
 	
-	virtual void SetColor(const RelativeRect &iRect, const ColorRoutines::RGBColor &) override
+	virtual void SetColor(const RelativeRect &iRect, const RGBColor &) override
 	{
 	  mRects.push_back(ImageRoutines::ToAbsoluteRect(mCanvasImage, iRect));	
 	}
-
-	std::vector<AbsoluteRect> mRects;
 	
+	virtual void Flush() { }
+	std::vector<AbsoluteRect> mRects;
+
 	Image mCanvasImage;
     } mDestination;
 };
@@ -219,7 +220,7 @@ namespace
   {
     std::string mFilename;
     std::string mFilenameOut;
-    ColorRoutines::RGBColor mColors[9];
+    RGBColor mColors[9];
 
   };
   
@@ -228,7 +229,7 @@ namespace
     os << d.mFilename;
     return os;
   }
-  std::ostream & operator<< (::std::ostream &os, const ColorRoutines::RGBColor &d)
+  std::ostream & operator<< (::std::ostream &os, const RGBColor &d)
   {
     os << "(" << (int)d.r << "," << (int)d.g << "," << (int)d.b <<")";
     return os;
@@ -354,13 +355,13 @@ class ImageRegressionTest : public ::testing::Test, public ::testing::WithParamI
 	  {
 	  }
 	
-	virtual void SetColor(const RelativeRect &iRect, const ColorRoutines::RGBColor &iColor) override
+	virtual void SetColor(const RelativeRect &iRect, const RGBColor &iColor) override
 	{
 	  FileSink::SetColor(iRect, iColor);
 	  mColors.push_back(iColor); 
 	}
 
-	std::vector<ColorRoutines::RGBColor> mColors;
+	std::vector<RGBColor> mColors;
     } mResult;
     
     class DuplicatingFileSource : public FileSource

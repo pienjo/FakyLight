@@ -72,7 +72,7 @@ TEST(SmoothHistogram, Pulse_end)
   // Arrange
   ImageStatistics stats;
   const uint32_t kernelSize = 7; 
-  stats.mHueHistogram[ColorRoutines::HUE_MAX] = 1000;
+  stats.mHueHistogram[HSVColor::HUE_MAX] = 1000;
   stats.mHueHistogramTotal = 1000;
   // Act
   SmoothHueHistogram(stats, kernelSize);
@@ -109,27 +109,27 @@ TEST(GetMode_Hue, modeEnd)
 {
   // Arrange
   ImageStatistics stats;
-  stats.mHueHistogram[ColorRoutines::HUE_MAX] = 1234;
+  stats.mHueHistogram[HSVColor::HUE_MAX] = 1234;
 
   // Act
   size_t mode = GetMode_Hue(stats);
 
   // Assert
-  ASSERT_EQ(ColorRoutines::HUE_MAX, mode);
+  ASSERT_EQ(HSVColor::HUE_MAX, mode);
 }
 
 TEST(GetMode_Hue, modeMiddle)
 {
   // Arrange
   ImageStatistics stats;
-  stats.mHueHistogram[ColorRoutines::HUE_MAX/2] = 1234;
-  stats.mHueHistogram[ColorRoutines::HUE_MAX] = 345;
+  stats.mHueHistogram[HSVColor::HUE_MAX/2] = 1234;
+  stats.mHueHistogram[HSVColor::HUE_MAX] = 345;
 
   // Act
   size_t mode = GetMode_Hue(stats);
 
   // Assert
-  ASSERT_EQ((size_t) ColorRoutines::HUE_MAX/2, mode);
+  ASSERT_EQ((size_t) HSVColor::HUE_MAX/2, mode);
 }
 
 TEST(GetModal_Value, flatline)

@@ -17,7 +17,7 @@ void FileSink::Flush()
   ImageRoutines::WritePPM(mCanvasImage, mFilename);
 }
 
-void FileSink::SetColor(const RelativeRect &iRect, const ColorRoutines::RGBColor &iColor) 
+void FileSink::SetColor(const RelativeRect &iRect, const RGBColor &iColor) 
 {
   if(mCanvasImage.data() != nullptr)
   {

@@ -30,7 +30,7 @@ void ProcessingRoutines::Process(ImageSource &source, ColorSink &sink)
       
       HistogramRoutines::SmoothHueHistogram(stats, SMOOTH_KERNEL_SIZE );
       HistogramRoutines::ClearLowerValueBuckets(stats, MIN_VALUE_BUCKET );
-      ColorRoutines::HSVColor dominantHSV = HistogramRoutines::GetDominantColor(stats);
+      HSVColor dominantHSV = HistogramRoutines::GetDominantColor(stats);
       
       sink.SetColor(r, ColorRoutines::HSVtoRGB(dominantHSV));
     }

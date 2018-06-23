@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <turbojpeg.h>
 
-void ImageRoutines::SetRect(Image &ioImage, const RelativeRect &iRect, const ColorRoutines::RGBColor &iColor)
+void ImageRoutines::SetRect(Image &ioImage, const RelativeRect &iRect, const RGBColor &iColor)
 {
   AbsoluteRect absoluteRect = ToAbsoluteRect(ioImage, iRect);
   SetRect(ioImage, absoluteRect, iColor);
 }
-void ImageRoutines::SetRect(Image &ioImage, const AbsoluteRect &iRect, const ColorRoutines::RGBColor &iColor)
+void ImageRoutines::SetRect(Image &ioImage, const AbsoluteRect &iRect, const RGBColor &iColor)
 {
   uint8_t *d = ioImage.data();
   

@@ -140,7 +140,7 @@ TEST(RGBtoHSV, HueRange)
 
   // Assert
   ASSERT_EQ(0, min);
-  ASSERT_EQ(HUE_MAX, max);
+  ASSERT_EQ(HSVColor::HUE_MAX, max);
 }
 
 TEST(HSVtoRGB, FullRed)

@@ -2,6 +2,7 @@
 #define HISTOGRAMROUTINES_H
 
 #include "ColorRoutines.h"
+#include "Colors.h"
 
 namespace HistogramRoutines
 {
@@ -14,7 +15,7 @@ namespace HistogramRoutines
   size_t GetMode_Hue(const ImageStatistics &iStatistics);
   size_t GetModal_Value(const ImageStatistics &iStatistics);
 
-  ColorRoutines::HSVColor GetDominantColor(const ImageStatistics &statistics);  
+  HSVColor GetDominantColor(const ImageStatistics &statistics);  
 }
 
 #endif

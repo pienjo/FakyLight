@@ -6,7 +6,7 @@ OBJECTS_1=$(SOURCES:../%.cpp=obj/%.o)
 OBJECTS_2=$(OBJECTS_1:%.cpp=obj/%.o)
 OBJECTS=$(OBJECTS_2:../%.c=obj/%.o) obj/gtest-all.o
 CFLAGS=-g -Wall -Werror -I $(GTEST_DIR)/include -I ..
-LDFLAGS=-pthread
+LDFLAGS=-pthread -lturbojpeg
 
 DEPS=$(OBJECTS:.o=.d)
 

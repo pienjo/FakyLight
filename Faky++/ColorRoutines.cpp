@@ -2,9 +2,6 @@
 #include "Image.h"
 #include "ImageRoutines.h"
 
-using ColorRoutines::RGBColor;
-using ColorRoutines::HSVColor;
-
 ColorRoutines::ImageStatistics::ImageStatistics() 
   : mHueHistogramTotal (0)
   , mAverageSaturation (0)
@@ -40,7 +37,7 @@ HSVColor ColorRoutines::RGBtoHSV(const RGBColor &rgb)
       if (rgb.g>=rgb.b)
         hsv.h = 42 * (rgb.g - rgb.b) / delta;
       else
-	hsv.h = HUE_MAX - 42 * (rgb.b-rgb.g) / delta;
+	hsv.h = HSVColor::HUE_MAX - 42 * (rgb.b-rgb.g) / delta;
     } else if ( max == rgb.g)
     {
       hsv.h = 84 + 42 * (rgb.b - rgb.r) / delta;

@@ -12,7 +12,7 @@ class FileSink : public ColorSink
 
     void SetCanvas(const Image &pImage);
     void Flush() override;	
-    virtual void SetColor(const RelativeRect &iRect, const ColorRoutines::RGBColor &iColor) override;
+    virtual void SetColor(const RelativeRect &iRect, const RGBColor &iColor) override;
 
   private:
     const std::string mFilename;

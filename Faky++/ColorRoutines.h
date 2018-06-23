@@ -4,28 +4,10 @@
 #include <vector>
 #include "Image.h"
 #include "Rect.h"
+#include "Colors.h"
 
 namespace ColorRoutines
 {
-  enum 
-  {
-    HUE_MAX = 252
-  };
-  
-  struct RGBColor 
-  {
-    uint8_t r,g,b;
-    bool operator==(const RGBColor &other) const
-    {
-      return r == other.r && b == other.b && g == other.g;
-    }
-  };
-
-  struct HSVColor
-  {
-    uint8_t h,s,v;
-  };
-  
   typedef std::vector<uint32_t> histogramT;
   
   HSVColor RGBtoHSV(const RGBColor &rgbColor);
@@ -37,7 +19,7 @@ namespace ColorRoutines
       ImageStatistics();
       
       enum {
-	HueHistogramSize = (HUE_MAX+1)
+	HueHistogramSize = (HSVColor::HUE_MAX+1)
       };
       histogramT mHueHistogram;
       uint32_t mHueHistogramTotal;

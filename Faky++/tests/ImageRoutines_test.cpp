@@ -19,8 +19,6 @@ class ImageRoutinesTest : public ::testing::Test
 const uint32_t ImageRoutinesTest::mCanvasHeight = 100;
 const uint32_t ImageRoutinesTest::mCanvasWidth = 200;
 
-using ColorRoutines::RGBColor;
-
 namespace {
   ::testing::AssertionResult AssertTableContents(const char *m_expr, const char *n_expr, const char *index_expr, uint32_t m, uint32_t n, int index)
   {
