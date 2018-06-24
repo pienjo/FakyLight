@@ -6,6 +6,9 @@
 
 #include <atomic>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <list>
 
 class Scheduler
 {
@@ -20,6 +23,11 @@ class Scheduler
     void RetrieveLoop();
     void CalculationLoop();
     void DiagnosticsLoop();
+
+    std::condition_variable mImageReadyCV;
+    std::mutex mImageReadyMutex;
+
+    std::list<Image> mOutstandingImages;
 
     std::atomic<uint32_t> mNrFramesRetrieved;
 };

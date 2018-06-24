@@ -1,6 +1,7 @@
 #include "Scheduler.h"
 #include <thread>
 #include <chrono>
+#include "ProcessingRoutines.h"
 
 using namespace std::chrono_literals;
 
@@ -13,16 +14,16 @@ Scheduler::Scheduler(ImageSource &source, ColorSink &sink)
 void Scheduler::RetrieveLoop()
 {
   printf("Retrieve: %p\n", this);
-  const auto framePeriod = 10ms;
+  const auto framePeriod = 50ms;
   const auto timeoutPeriod = 1s;
   
   for ( ;; )
   {
     std::chrono::system_clock::time_point wakeupTime = std::chrono::system_clock::now();
-
+    Image retrievedImage;
     try 
     {
-      mSource.FetchImage();
+      retrievedImage = mSource.FetchImage();
       ++mNrFramesRetrieved;
       wakeupTime += framePeriod;
     } catch (ImageSource::timeout_error &)
@@ -30,6 +31,12 @@ void Scheduler::RetrieveLoop()
       printf("Timeout\n");
       wakeupTime += timeoutPeriod; 
     }
+    
+    do {
+      std::lock_guard<std::mutex> lock(mImageReadyMutex);
+      mOutstandingImages.push_back(retrievedImage);
+    } while(0); 
+    mImageReadyCV.notify_one();
 
     std::this_thread::sleep_until(wakeupTime);
   }
@@ -37,8 +44,30 @@ void Scheduler::RetrieveLoop()
 
 void Scheduler::CalculationLoop()
 {
-
   printf("Calculation: %p\n", this);
+  for(;;)
+  {
+    Image imageToProcess;
+    do {
+      std::unique_lock<std::mutex> lock(mImageReadyMutex);
+      mImageReadyCV.wait(lock, [this, &imageToProcess] () -> bool
+	  {
+	    if (!mOutstandingImages.empty())
+	    {
+	      imageToProcess = mOutstandingImages.front();
+	      mOutstandingImages.pop_front();
+	      return true;
+	    }
+	    else
+	    {
+	      return false;
+	    }
+	  });
+    } while(0);
+    mImageReadyCV.notify_one();
+    
+    ProcessingRoutines::Process(imageToProcess, mSink);
+  }
 }
 
 void Scheduler::DiagnosticsLoop()
@@ -49,7 +78,8 @@ void Scheduler::DiagnosticsLoop()
   {
     uint32_t produced = mNrFramesRetrieved.exchange(0);
     
-    printf("%d FPS\n", produced);
+    printf("%d FPS  \r", produced);
+    fflush(stdout);
     std::this_thread::sleep_for( 1s );
   }
 }
