@@ -36,6 +36,7 @@ local function do_test(input_fn)
 end
 
 do_test("TestImages/100nl.ppm")
+do_test("TestImages/blackscreen.ppm")
 
 do_test("TestImages/discovery.ppm")
 do_test("TestImages/bamigo.ppm")
