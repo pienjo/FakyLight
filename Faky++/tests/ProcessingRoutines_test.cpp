@@ -73,7 +73,7 @@ TEST_F(ImageProcessingCoordinateCheck, NrCalls)
   ASSERT_EQ(180u, mDestination.mCanvasImage.Height());
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
 
   // Assert
   ASSERT_EQ((size_t) 9, mDestination.mRects.size());
@@ -84,7 +84,7 @@ TEST_F(ImageProcessingCoordinateCheck, rect_0)
   // Arrange
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
   AbsoluteRect r = mDestination.mRects[0];
 
   // Assert
@@ -99,7 +99,7 @@ TEST_F(ImageProcessingCoordinateCheck, rect_1)
   // Arrange
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
   AbsoluteRect r = mDestination.mRects[1];
 
   // Assert
@@ -114,7 +114,7 @@ TEST_F(ImageProcessingCoordinateCheck, rect_2)
   // Arrange
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
   AbsoluteRect r = mDestination.mRects[2];
 
   // Assert
@@ -129,7 +129,7 @@ TEST_F(ImageProcessingCoordinateCheck, rect_3)
   // Arrange
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
   AbsoluteRect r = mDestination.mRects[3];
 
   // Assert
@@ -144,7 +144,7 @@ TEST_F(ImageProcessingCoordinateCheck, rect_4)
   // Arrange
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
   AbsoluteRect r = mDestination.mRects[4];
 
   // Assert
@@ -159,7 +159,7 @@ TEST_F(ImageProcessingCoordinateCheck, rect_5)
   // Arrange
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
   AbsoluteRect r = mDestination.mRects[5];
 
   // Assert
@@ -174,7 +174,7 @@ TEST_F(ImageProcessingCoordinateCheck, rect_6)
   // Arrange
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
   AbsoluteRect r = mDestination.mRects[6];
 
   // Assert
@@ -189,7 +189,7 @@ TEST_F(ImageProcessingCoordinateCheck, rect_7)
   // Arrange
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
   AbsoluteRect r = mDestination.mRects[7];
 
   // Assert
@@ -204,7 +204,7 @@ TEST_F(ImageProcessingCoordinateCheck, rect_8)
   // Arrange
 
   // Act
-  Process(mSource, mDestination);
+  Process(mSource.FetchImage(), mDestination);
   AbsoluteRect r = mDestination.mRects[8];
 
   // Assert
@@ -249,6 +249,19 @@ const RegressionData myRegressionData[] =
   },
   { "../../TestImages/bamigo.ppm", 
     "../../TestImages/bamigo-out-pp.ppm",
+    {
+      { 120, 116, 124}, 
+      { 152, 146, 159}, 
+      { 146, 138, 154}, 
+      { 152, 145, 160}, { 156, 150, 164}, 
+      { 156, 150, 164}, 
+      { 152, 145, 160}, 
+      { 160, 154, 166}, 
+      { 105, 101, 110}
+    }
+  },
+  { "../../TestImages/blackscreen.ppm", 
+    "../../TestImages/blackscreen-out-pp.ppm",
     {
       { 120, 116, 124}, 
       { 152, 146, 159}, 
@@ -389,7 +402,7 @@ TEST_P(ImageRegressionTest, Rect_0)
   mInhibit = false;
 
   // Act
-  Process(mSource, mResult);
+  Process(mSource.FetchImage(), mResult);
 
   // Assert
   ASSERT_LE(0u, mResult.mColors.size());
@@ -401,7 +414,7 @@ TEST_P(ImageRegressionTest, Rect_1)
   // Arrange
 
   // Act
-  Process(mSource, mResult);
+  Process(mSource.FetchImage(), mResult);
 
   // Assert
   ASSERT_LE(1u, mResult.mColors.size());
@@ -413,7 +426,7 @@ TEST_P(ImageRegressionTest, Rect_2)
   // Arrange
 
   // Act
-  Process(mSource, mResult);
+  Process(mSource.FetchImage(), mResult);
 
   // Assert
   ASSERT_LE(2u, mResult.mColors.size());
@@ -425,7 +438,7 @@ TEST_P(ImageRegressionTest, Rect_3)
   // Arrange
 
   // Act
-  Process(mSource, mResult);
+  Process(mSource.FetchImage(), mResult);
 
   // Assert
   ASSERT_LE(3u, mResult.mColors.size());
@@ -437,7 +450,7 @@ TEST_P(ImageRegressionTest, Rect_4)
   // Arrange
 
   // Act
-  Process(mSource, mResult);
+  Process(mSource.FetchImage(), mResult);
 
   // Assert
   ASSERT_LE(4u, mResult.mColors.size());
@@ -449,7 +462,7 @@ TEST_P(ImageRegressionTest, Rect_5)
   // Arrange
 
   // Act
-  Process(mSource, mResult);
+  Process(mSource.FetchImage(), mResult);
 
   // Assert
   ASSERT_LE(5u, mResult.mColors.size());
@@ -461,7 +474,7 @@ TEST_P(ImageRegressionTest, Rect_6)
   // Arrange
 
   // Act
-  Process(mSource, mResult);
+  Process(mSource.FetchImage(), mResult);
 
   // Assert
   ASSERT_LE(6u, mResult.mColors.size());
@@ -473,7 +486,7 @@ TEST_P(ImageRegressionTest, Rect_7)
   // Arrange
 
   // Act
-  Process(mSource, mResult);
+  Process(mSource.FetchImage(), mResult);
 
   // Assert
   ASSERT_LE(7u, mResult.mColors.size());
@@ -485,7 +498,7 @@ TEST_P(ImageRegressionTest, Rect_8)
   // Arrange
 
   // Act
-  Process(mSource, mResult);
+  Process(mSource.FetchImage(), mResult);
 
   // Assert
   ASSERT_LE(8u, mResult.mColors.size());

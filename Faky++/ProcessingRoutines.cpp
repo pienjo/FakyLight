@@ -1,6 +1,5 @@
 #include "ProcessingRoutines.h"
 #include "ColorSink.h"
-#include "ImageSource.h"
 
 #include "HistogramRoutines.h"
 
@@ -19,26 +18,18 @@ const RelativeRect rectsToProcess[] =
   {  0, 66.6,  25, 100 },
 };
 
-void ProcessingRoutines::Process(ImageSource &source, ColorSink &sink)
+void ProcessingRoutines::Process(const Image &sourceImage, ColorSink &sink)
 {
-  try {
-    Image sourceImage = source.FetchImage();
-  
-    for (const RelativeRect &r : rectsToProcess )
-    {
-      ColorRoutines::ImageStatistics stats = ColorRoutines::GetImageStatistics(sourceImage, r);
-      
-      HistogramRoutines::SmoothHueHistogram(stats, SMOOTH_KERNEL_SIZE );
-      HistogramRoutines::ClearLowerValueBuckets(stats, MIN_VALUE_BUCKET );
-      HSVColor dominantHSV = HistogramRoutines::GetDominantColor(stats);
-      
-      sink.SetColor(r, ColorRoutines::HSVtoRGB(dominantHSV));
-    }
-
-    sink.Flush();
-  }
-  catch ( ImageSource::timeout_error &e )
+  for (const RelativeRect &r : rectsToProcess )
   {
-    // Do nothing, swallow exception
+    ColorRoutines::ImageStatistics stats = ColorRoutines::GetImageStatistics(sourceImage, r);
+    
+    HistogramRoutines::SmoothHueHistogram(stats, SMOOTH_KERNEL_SIZE );
+    HistogramRoutines::ClearLowerValueBuckets(stats, MIN_VALUE_BUCKET );
+    HSVColor dominantHSV = HistogramRoutines::GetDominantColor(stats);
+    
+    sink.SetColor(r, ColorRoutines::HSVtoRGB(dominantHSV));
   }
+
+  sink.Flush();
 }

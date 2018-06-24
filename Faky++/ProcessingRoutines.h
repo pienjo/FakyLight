@@ -1,11 +1,11 @@
 #ifndef PROCESSINGROUTINES_H
 #define PROCESSINGROUTINES_H
 
-class ImageSource;
-class ColorSink;
+#include "ColorSink.h"
+#include "Image.h"
 
 namespace ProcessingRoutines
 {
-  void Process(ImageSource &source, ColorSink &sink);
+  void Process(const Image &source, ColorSink &sink);
 }
 #endif
