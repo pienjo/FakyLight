@@ -78,11 +78,11 @@ void HistogramRoutines::ClearLowerValueBuckets(ImageStatistics &ioStatistics, si
 
 HSVColor HistogramRoutines::GetDominantColor(const ImageStatistics &statistics)
 {
-  HSVColor hsvColor;
+  HSVColor hsvColor = { 0, 0, 0 };
   
   // The hue is the mode of the hue histogram
   hsvColor.h = GetMode_Hue(statistics);
-  
+   
   // The magic formula: The ratio of the surface of the mode bin and the total surface of the hue histogram, multiplied
   // by the average saturation.
 
