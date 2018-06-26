@@ -1,4 +1,4 @@
-SOURCES=RoapSource.cpp FileSink.cpp ColorRoutines.cpp HistogramRoutines.cpp Image.cpp ImageRoutines.cpp ProcessingRoutines.cpp LEDSink.cpp UDPStrip.cpp Scheduler.cpp
+SOURCES=RoapSource.cpp FileSink.cpp ColorRoutines.cpp HistogramRoutines.cpp Image.cpp ImageRoutines.cpp ProcessingRoutines.cpp LEDSink.cpp UDPStrip.cpp Scheduler.cpp WS2812Strip.cpp
 
 #OBJECTS_1=$(SOURCES:../%.cpp=obj/%.o)
 OBJECTS_2=$(SOURCES:%.cpp=obj/%.o)
