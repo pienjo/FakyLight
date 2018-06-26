@@ -42,6 +42,9 @@
 
 using namespace std::chrono_literals;
 
+#define MIX_TIME 1s
+#define IDLE_TIME 60s
+
 WS2812Strip::WS2812Strip()
   : mDeviceDescriptor(-1)
 {
@@ -115,6 +118,8 @@ void WS2812Strip::WriteCurrentValues() const
 {
   // Convert to nybble. 
   std::vector<uint8_t> myBuffer;
+  if (mCurrentValues.empty())
+    return;
   uint32_t outputSize = mCurrentValues.size() * 4 + LATCHBYTES;
   myBuffer.resize( outputSize );
 
@@ -156,6 +161,7 @@ void WS2812Strip::WriteBitstream(const std::vector<uint8_t> &pBitstream) const
 void WS2812Strip::Mix(uint8_t pMixRatio)
 {
   std::lock_guard<std::mutex> lock(mTargetValuesMutex);
+
   size_t maxIndex = std::min(mCurrentValues.size(), mTargetValues.size());
   uint8_t complement = (int) (256 - pMixRatio);
 
@@ -181,7 +187,7 @@ void WS2812Strip::DeviceLoop()
     {
       case MIXING:
       {
-	if (std::chrono::steady_clock::now() - mLastTargetUpdate < 1s)	
+	if (std::chrono::steady_clock::now() - mLastTargetUpdate >= MIX_TIME)	
 	{
 	  mDeviceStatus = IDLE;
 	  SetToBlack();
@@ -189,7 +195,7 @@ void WS2812Strip::DeviceLoop()
 	// else fall-through
       case IDLE:
 
-	if (std::chrono::steady_clock::now() - mLastTargetUpdate >= 60s)
+	if (std::chrono::steady_clock::now() - mLastTargetUpdate >= IDLE_TIME)
 	{
 	  // Go to standby.
 	  mDeviceStatus = STANDBY;
@@ -202,6 +208,7 @@ void WS2812Strip::DeviceLoop()
 	WriteCurrentValues();
 
 	std::this_thread::sleep_for(20ms);
+	break;
       }
       case STANDBY:
 	mDeviceStatusCV.wait( lock, [this] { return mDeviceStatus == MIXING; });	
