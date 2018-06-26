@@ -65,8 +65,9 @@ void Scheduler::CalculationLoop()
 	  });
     } while(0);
     mImageReadyCV.notify_one();
-    
-    ProcessingRoutines::Process(imageToProcess, mSink);
+
+    if(imageToProcess.length() > 0)
+      ProcessingRoutines::Process(imageToProcess, mSink);
   }
 }
 
