@@ -13,7 +13,7 @@ DEPS=$(OBJECTS:.o=.d)
 all:	fetch stream
 
 clean: 
-	rm -rf $(OBJECTS) $(DEPS) fetch obj/fetch-main.*
+	rm -rf $(OBJECTS) $(DEPS) fetch obj/fetch-main.* stream obj/stream-main.*
 
 fetch:	$(OBJECTS) obj/fetch-main.o
 	$(CXX) -o $@ $(OBJECTS) obj/fetch-main.o $(LDFLAGS) 
