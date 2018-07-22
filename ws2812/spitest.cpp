@@ -115,7 +115,6 @@ void spiDevice::WriteBuffer( const uint8_t *buffer, const uint32_t size)
 
   if (0 > ioctl(mFileDescriptor, SPI_IOC_MESSAGE(1), &tr))
   {
-    perror("waa");
     throw std::runtime_error("Error sending message!");
   }
 
