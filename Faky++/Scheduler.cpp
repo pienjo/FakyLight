@@ -19,7 +19,7 @@ void Scheduler::RetrieveLoop()
   
   for ( ;; )
   {
-    std::chrono::system_clock::time_point wakeupTime = std::chrono::system_clock::now();
+    std::chrono::steady_clock::time_point wakeupTime = std::chrono::steady_clock::now();
     Image retrievedImage;
     try 
     {
