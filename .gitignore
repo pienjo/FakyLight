@@ -2,3 +2,4 @@ nanojpeg.so
 *.o
 *.d
 .*.swp
+*.bak
