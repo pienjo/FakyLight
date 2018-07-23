@@ -38,5 +38,5 @@ void GPIOPin::Engage()
 
 void GPIOPin::Disengage()
 {
-  gpiod_line_set_value(mLine, 1);
+  gpiod_line_set_value(mLine, 0);
 }
