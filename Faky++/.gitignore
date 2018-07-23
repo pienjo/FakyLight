@@ -1,4 +1,5 @@
 fetch
 stream
+stream_gpio
 *.ppm
 obj/*
