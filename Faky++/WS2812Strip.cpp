@@ -7,7 +7,6 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
-
   /* Determination of transfer speed:
      
      Max pulse time for a 0-bit :  500 ns
@@ -45,13 +44,14 @@ using namespace std::chrono_literals;
 #define MIX_TIME 1s
 #define IDLE_TIME 60s
 
-WS2812Strip::WS2812Strip()
+WS2812Strip::WS2812Strip(IPin &pEnablePin)
   : mDeviceDescriptor(-1)
+  , mEnablePin(pEnablePin)
 {
   mDeviceDescriptor = open(DEVICENAME, O_RDWR);
   if (mDeviceDescriptor < 0)
   {
-    throw std::runtime_error("Unable to open file");
+    throw std::runtime_error("Unable to open SPI device");
   }
   
   // Setup device
@@ -68,6 +68,8 @@ WS2812Strip::WS2812Strip()
  
   if (0 != ioctl(mDeviceDescriptor, SPI_IOC_WR_MAX_SPEED_HZ, &speed))
     throw std::runtime_error("Unable to write speed");
+  
+  mEnablePin.Disengage();
 
   mDeviceStatus = STANDBY;
   mDeviceThread = std::thread([this]{ DeviceLoop(); } );
@@ -75,17 +77,18 @@ WS2812Strip::WS2812Strip()
 
 WS2812Strip::~WS2812Strip()
 {
+  do {
+    std::lock_guard<std::mutex> lock(mDeviceStatusMutex);
+    mDeviceStatus = STOPPING;
+  } while(0);
+
+  mDeviceThread.join();
+  
   if (mDeviceDescriptor >= 0)
   {
     close(mDeviceDescriptor);
     mDeviceDescriptor = -1;
   }
-
-  do {
-    std::lock_guard<std::mutex> lock(mDeviceStatusMutex);
-    mDeviceStatus = STOPPING;
-  } while(0);
-  mDeviceThread.join();
 }
 
 void WS2812Strip::SetContents(const std::vector<RGBColor> &pValues) 
@@ -198,8 +201,8 @@ void WS2812Strip::DeviceLoop()
 	if (std::chrono::steady_clock::now() - mLastTargetUpdate >= IDLE_TIME)
 	{
 	  // Go to standby.
+	  mEnablePin.Disengage();
 	  mDeviceStatus = STANDBY;
-
 	  break;
 	}
 	
@@ -211,7 +214,11 @@ void WS2812Strip::DeviceLoop()
 	break;
       }
       case STANDBY:
-	mDeviceStatusCV.wait( lock, [this] { return mDeviceStatus == MIXING; });	
+	mDeviceStatusCV.wait( lock, [this] { return mDeviceStatus != STANDBY; });
+	if (mDeviceStatus != STOPPING)
+	{
+	  mEnablePin.Engage();
+	}
 	break;
       case STOPPING:
 	return;

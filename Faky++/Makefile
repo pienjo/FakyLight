@@ -1,16 +1,16 @@
-SOURCES=RoapSource.cpp FileSink.cpp ColorRoutines.cpp HistogramRoutines.cpp Image.cpp ImageRoutines.cpp ProcessingRoutines.cpp LEDSink.cpp UDPStrip.cpp Scheduler.cpp WS2812Strip.cpp
+SOURCES=RoapSource.cpp FileSink.cpp ColorRoutines.cpp HistogramRoutines.cpp Image.cpp ImageRoutines.cpp ProcessingRoutines.cpp LEDSink.cpp UDPStrip.cpp Scheduler.cpp WS2812Strip.cpp GPIOPin.cpp
 
 #OBJECTS_1=$(SOURCES:../%.cpp=obj/%.o)
 OBJECTS_2=$(SOURCES:%.cpp=obj/%.o)
 OBJECTS=$(OBJECTS_2:../%.c=obj/%.o) 
 CFLAGS=-g -Wall -Werror $(shell pkg-config --cflags curlpp)
 #LDFLAGS=$(shell pkg-config --libs curlpp)
-LDFLAGS=-lcurl -lcurlpp -lm -lturbojpeg -lpthread
+LDFLAGS=-lcurl -lcurlpp -lm -lturbojpeg -lpthread -lgpiod
 DEPS=$(OBJECTS:.o=.d)
 
 .PHONY: all clean 
 
-all:	fetch stream
+all:	fetch stream stream_gpio
 
 clean: 
 	rm -rf $(OBJECTS) $(DEPS) fetch obj/fetch-main.* stream obj/stream-main.*
@@ -21,6 +21,10 @@ fetch:	$(OBJECTS) obj/fetch-main.o
 
 stream:	$(OBJECTS) obj/stream-main.o
 	$(CXX) -o $@ $(OBJECTS) obj/stream-main.o $(LDFLAGS)
+	#strip $@
+
+stream_gpio:	$(OBJECTS) obj/stream_gpio-main.o
+	$(CXX) -o $@ $(OBJECTS) obj/stream_gpio-main.o $(LDFLAGS)
 	#strip $@
 
 -include $(DEPS)

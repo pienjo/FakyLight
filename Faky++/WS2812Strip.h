@@ -2,6 +2,8 @@
 #define WS2812STRIP_H
 
 #include "LEDStrip.h"
+#include "IPin.h"
+
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -9,7 +11,7 @@
 class WS2812Strip : public LEDStrip
 {
   public:
-    WS2812Strip();
+    WS2812Strip(IPin &pEnablePin);
     ~WS2812Strip();
 
     void SetContents(const std::vector<RGBColor> &pValues) override;
@@ -43,5 +45,7 @@ class WS2812Strip : public LEDStrip
 
     std::thread mDeviceThread;
     int mDeviceDescriptor;
+
+    IPin &mEnablePin;
 };
 #endif
