@@ -42,7 +42,8 @@
 using namespace std::chrono_literals;
 
 #define MIX_TIME 1s
-#define IDLE_TIME 60s
+#define IDLE_TIME 30s
+#define MIX_DELAY 20ms
 
 WS2812Strip::WS2812Strip(IPin &pEnablePin)
   : mDeviceDescriptor(-1)
@@ -80,9 +81,11 @@ WS2812Strip::~WS2812Strip()
   do {
     std::lock_guard<std::mutex> lock(mDeviceStatusMutex);
     mDeviceStatus = STOPPING;
+    mDeviceStatusCV.notify_one();
   } while(0);
 
   mDeviceThread.join();
+  mEnablePin.Disengage();
   
   if (mDeviceDescriptor >= 0)
   {
@@ -164,13 +167,14 @@ void WS2812Strip::WriteBitstream(const std::vector<uint8_t> &pBitstream) const
 void WS2812Strip::Mix(uint8_t pMixRatio)
 {
   std::lock_guard<std::mutex> lock(mTargetValuesMutex);
+  if (mCurrentValues.size() < mTargetValues.size())
+    mCurrentValues.resize(mTargetValues.size());
 
-  size_t maxIndex = std::min(mCurrentValues.size(), mTargetValues.size());
-  uint8_t complement = (int) (256 - pMixRatio);
+  int complement = (int) (256 - pMixRatio);
 
-  for (size_t i = 0; i < maxIndex; ++i)
+  for (size_t i = 0; i < mTargetValues.size() ; ++i)
   {
-    uint32_t m = (uint32_t) mCurrentValues[i] * complement + (uint32_t) mTargetValues[i] * pMixRatio;
+    uint32_t m = (uint32_t) mCurrentValues[i] * complement + (uint32_t) mTargetValues[i] * (int)pMixRatio;
     mCurrentValues[i] = (uint8_t) (m >> 8);
   }
 }
@@ -203,14 +207,15 @@ void WS2812Strip::DeviceLoop()
 	  // Go to standby.
 	  mEnablePin.Disengage();
 	  mDeviceStatus = STANDBY;
+	  mCurrentValues.clear();
 	  break;
 	}
 	
 	lock.unlock();
-	Mix( 64 );
+	Mix( 16 );
 	WriteCurrentValues();
 
-	std::this_thread::sleep_for(20ms);
+	std::this_thread::sleep_for(MIX_DELAY);
 	break;
       }
       case STANDBY:
