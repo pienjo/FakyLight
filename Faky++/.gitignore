@@ -1,5 +1,6 @@
 fetch
 stream
 stream_gpio
+ws2812_test
 *.ppm
 obj/*
