@@ -6,7 +6,7 @@
 class WS2812Strip : public ILEDStrip
 {
   public:
-    WS2812Strip();
+    WS2812Strip(const std::string &pDeviceName);
     ~WS2812Strip();
 
     void SetContents(const std::vector<RGBColor> &pValues) override;

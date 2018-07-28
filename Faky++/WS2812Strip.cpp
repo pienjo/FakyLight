@@ -37,12 +37,10 @@
 #define BITRATE 2000000
 #define LATCHBYTES  3 
 
-#define DEVICENAME "/dev/spidev1.0"
-
-WS2812Strip::WS2812Strip()
+WS2812Strip::WS2812Strip(const std::string &pDeviceName)
   : mDeviceDescriptor(-1)
 {
-  mDeviceDescriptor = open(DEVICENAME, O_RDWR);
+  mDeviceDescriptor = open(pDeviceName.c_str(), O_RDWR);
   if (mDeviceDescriptor < 0)
   {
     throw std::runtime_error("Unable to open SPI device");

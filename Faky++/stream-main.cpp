@@ -3,7 +3,6 @@
 #include "UDPStrip.h"
 #include "LEDSink.h"
 #include "Scheduler.h"
-#include "WS2812Strip.h"
 
 int main(void)
 {
