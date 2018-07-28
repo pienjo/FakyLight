@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-class UDPStrip : public LEDStrip
+class UDPStrip : public ILEDStrip
 {
   public:
     UDPStrip(const char *hostname, uint16_t port);

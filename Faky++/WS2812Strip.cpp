@@ -39,15 +39,8 @@
 
 #define DEVICENAME "/dev/spidev1.0"
 
-using namespace std::chrono_literals;
-
-#define MIX_TIME 1s
-#define IDLE_TIME 30s
-#define MIX_DELAY 20ms
-
-WS2812Strip::WS2812Strip(IPin &pEnablePin)
+WS2812Strip::WS2812Strip()
   : mDeviceDescriptor(-1)
-  , mEnablePin(pEnablePin)
 {
   mDeviceDescriptor = open(DEVICENAME, O_RDWR);
   if (mDeviceDescriptor < 0)
@@ -69,24 +62,10 @@ WS2812Strip::WS2812Strip(IPin &pEnablePin)
  
   if (0 != ioctl(mDeviceDescriptor, SPI_IOC_WR_MAX_SPEED_HZ, &speed))
     throw std::runtime_error("Unable to write speed");
-  
-  mEnablePin.Disengage();
-
-  mDeviceStatus = STANDBY;
-  mDeviceThread = std::thread([this]{ DeviceLoop(); } );
 }
 
 WS2812Strip::~WS2812Strip()
 {
-  do {
-    std::lock_guard<std::mutex> lock(mDeviceStatusMutex);
-    mDeviceStatus = STOPPING;
-    mDeviceStatusCV.notify_one();
-  } while(0);
-
-  mDeviceThread.join();
-  mEnablePin.Disengage();
-  
   if (mDeviceDescriptor >= 0)
   {
     close(mDeviceDescriptor);
@@ -97,46 +76,12 @@ WS2812Strip::~WS2812Strip()
 void WS2812Strip::SetContents(const std::vector<RGBColor> &pValues) 
 {
   std::vector<uint8_t> buf;
-  buf.reserve(pValues.size() * 3);
-  
-  for (const RGBColor &c : pValues)
-  {
-    buf.push_back(c.g);
-    buf.push_back(c.r);
-    buf.push_back(c.b);
-  }
+  buf.reserve(pValues.size() * 3 * 4 + LATCHBYTES + 1);
+ 
+  buf.push_back(0); // dummy byte, allowing SPI clock to settle
 
-  do {
-    std::lock_guard<std::mutex> lock(mTargetValuesMutex);
-    mTargetValues = std::move(buf);
-  } while (0);
-
-  do {
-    std::lock_guard<std::mutex> lock(mDeviceStatusMutex);
-    mLastTargetUpdate = std::chrono::steady_clock::now();
-    mDeviceStatus = MIXING;
-    mDeviceStatusCV.notify_one();
-  } while(0);
-
-}
-
-void WS2812Strip::WriteCurrentValues() const
-{
-  // Convert to nybble. 
-  std::vector<uint8_t> myBuffer;
-  if (mCurrentValues.empty())
-    return;
-  uint32_t outputSize = mCurrentValues.size() * 4 + LATCHBYTES;
-  myBuffer.resize( outputSize );
-
-  uint8_t *output = &myBuffer.at(0);
-  const uint8_t *buffer = &mCurrentValues.at(0);
-
-  int outputIdx = 0;
-
-  for (uint32_t byteIdx = 0; byteIdx < mCurrentValues.size(); ++byteIdx) 
-  {
-    uint8_t byte = buffer[byteIdx];
+  auto encodeByte = [&buf] ( uint8_t byte) 
+  {  
     for (uint32_t groupIdx = 0; groupIdx < 4; groupIdx++)
     {
       uint8_t encoded = 0x44; // bit-pattern for two zeros
@@ -144,12 +89,23 @@ void WS2812Strip::WriteCurrentValues() const
 	encoded |= 0x20;
       if (byte & 0x40)
 	encoded |= 0x02;
-      output[outputIdx++] = encoded;
+
+      buf.push_back(encoded);
       byte <<= 2; 
     }
-  }
+  };
 
-  WriteBitstream(myBuffer);
+  for (const RGBColor &c : pValues)
+  {
+    encodeByte(c.g);
+    encodeByte(c.r);
+    encodeByte(c.b);
+  }
+  
+  for (int i = 0; i < LATCHBYTES; ++i)
+    buf.push_back(0);
+
+  WriteBitstream(buf);
 }
 
 void WS2812Strip::WriteBitstream(const std::vector<uint8_t> &pBitstream) const
@@ -164,69 +120,4 @@ void WS2812Strip::WriteBitstream(const std::vector<uint8_t> &pBitstream) const
   }
 }
 
-void WS2812Strip::Mix(uint8_t pMixRatio)
-{
-  std::lock_guard<std::mutex> lock(mTargetValuesMutex);
-  if (mCurrentValues.size() < mTargetValues.size())
-    mCurrentValues.resize(mTargetValues.size());
 
-  int complement = (int) (256 - pMixRatio);
-
-  for (size_t i = 0; i < mTargetValues.size() ; ++i)
-  {
-    uint32_t m = (uint32_t) mCurrentValues[i] * complement + (uint32_t) mTargetValues[i] * (int)pMixRatio;
-    mCurrentValues[i] = (uint8_t) (m >> 8);
-  }
-}
-
-void WS2812Strip::SetToBlack()
-{
-  std::lock_guard<std::mutex> lock(mTargetValuesMutex);
-  memset(&mTargetValues[0], 0, mTargetValues.size());
-}
-
-void WS2812Strip::DeviceLoop()
-{
-  for (;;)
-  {
-    std::unique_lock<std::mutex> lock(mDeviceStatusMutex);
-    switch(mDeviceStatus)
-    {
-      case MIXING:
-      {
-	if (std::chrono::steady_clock::now() - mLastTargetUpdate >= MIX_TIME)	
-	{
-	  mDeviceStatus = IDLE;
-	  SetToBlack();
-	}
-	// else fall-through
-      case IDLE:
-
-	if (std::chrono::steady_clock::now() - mLastTargetUpdate >= IDLE_TIME)
-	{
-	  // Go to standby.
-	  mEnablePin.Disengage();
-	  mDeviceStatus = STANDBY;
-	  mCurrentValues.clear();
-	  break;
-	}
-	
-	lock.unlock();
-	Mix( 16 );
-	WriteCurrentValues();
-
-	std::this_thread::sleep_for(MIX_DELAY);
-	break;
-      }
-      case STANDBY:
-	mDeviceStatusCV.wait( lock, [this] { return mDeviceStatus != STANDBY; });
-	if (mDeviceStatus != STOPPING)
-	{
-	  mEnablePin.Engage();
-	}
-	break;
-      case STOPPING:
-	return;
-    }
-  }
-}

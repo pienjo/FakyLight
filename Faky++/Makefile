@@ -1,34 +1,39 @@
-SOURCES=RoapSource.cpp FileSink.cpp ColorRoutines.cpp HistogramRoutines.cpp Image.cpp ImageRoutines.cpp ProcessingRoutines.cpp LEDSink.cpp UDPStrip.cpp Scheduler.cpp WS2812Strip.cpp GPIOPin.cpp
+COMMON_SOURCES=RoapSource.cpp Image.cpp ImageRoutines.cpp 
+CALCULATE_SOURCES=$(COMMON_SOURCES) ColorRoutines.cpp HistogramRoutines.cpp ProcessingRoutines.cpp Scheduler.cpp LEDSink.cpp 
+FETCH_SOURCES=$(COMMON_SOURCES) FileSink.cpp fetch-main.cpp
+STREAM_SOURCES=$(CALCULATE_SOURCES) UDPStrip.cpp stream-main.cpp
+STREAM_GPIO_SOURCES=$(CALCULATE_SOURCES) WS2812Strip.cpp MixingStrip.cpp GPIOPin.cpp stream_gpio-main.cpp
 
-#OBJECTS_1=$(SOURCES:../%.cpp=obj/%.o)
-OBJECTS_2=$(SOURCES:%.cpp=obj/%.o)
-OBJECTS=$(OBJECTS_2:../%.c=obj/%.o) 
+FETCH_OBJECTS=$(FETCH_SOURCES:%.cpp=obj/%.o)
+STREAM_OBJECTS=$(STREAM_SOURCES:%.cpp=obj/%.o)
+STREAM_GPIO_OBJECTS=$(STREAM_GPIO_SOURCES:%.cpp=obj/%.o)
+
 CFLAGS=-g -Wall -Werror $(shell pkg-config --cflags curlpp)
-#LDFLAGS=$(shell pkg-config --libs curlpp)
 LDFLAGS=-lcurl -lcurlpp -lm -lturbojpeg -lpthread -lgpiod
-DEPS=$(OBJECTS:.o=.d)
+
+DEPS=$(FETCH_OBJECTS:.o=.d) $(STREAM_OBJECTS:.o=.d) $(STREAM_GPIO_OBJECTS:.o=.d)
+
 
 .PHONY: all clean 
 
 all:	fetch stream stream_gpio
 
 clean: 
-	rm -rf $(OBJECTS) $(DEPS) fetch obj/fetch-main.* stream obj/stream-main.*
+	rm -rf $(FETCH_OBJECTS) $(STREAM_OBJECTS) $(STREAM_GPIO_OBJECTS) $(DEPS) fetch stream stream_gpio
 
-fetch:	$(OBJECTS) obj/fetch-main.o
-	$(CXX) -o $@ $(OBJECTS) obj/fetch-main.o $(LDFLAGS) 
+fetch:	$(FETCH_OBJECTS) 
+	$(CXX) -o $@ $(FETCH_OBJECTS) $(LDFLAGS) 
 	#strip $@
 
-stream:	$(OBJECTS) obj/stream-main.o
-	$(CXX) -o $@ $(OBJECTS) obj/stream-main.o $(LDFLAGS)
+stream:	$(STREAM_OBJECTS) 
+	$(CXX) -o $@ $(STREAM_OBJECTS) $(LDFLAGS)
 	#strip $@
 
-stream_gpio:	$(OBJECTS) obj/stream_gpio-main.o
-	$(CXX) -o $@ $(OBJECTS) obj/stream_gpio-main.o $(LDFLAGS)
+stream_gpio:	$(STREAM_GPIO_OBJECTS) 
+	$(CXX) -o $@ $(STREAM_GPIO_OBJECTS) $(LDFLAGS)
 	#strip $@
-
--include $(DEPS)
--include obj/fetch-main.d stream-main.d
 
 obj/%.o:	%.cpp
 	$(CXX) -MMD $(CFLAGS) -c $< -o $@
+
+-include $(DEPS)

@@ -4,10 +4,10 @@
 #include <vector>
 #include "Colors.h"
 
-class LEDStrip
+class ILEDStrip
 {
   public:
-    virtual ~LEDStrip() { }
+    virtual ~ILEDStrip() = default;
     virtual void SetContents(const std::vector<RGBColor> &pValues) = 0;
 };
 #endif

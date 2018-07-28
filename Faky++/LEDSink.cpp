@@ -1,7 +1,7 @@
 #include "LEDSink.h"
 #include "LEDStrip.h"
 
-LEDSink::LEDSink(uint32_t iNrSideLeds, uint32_t iNrTopLeds, LEDStrip &iTargetStrip)
+LEDSink::LEDSink(uint32_t iNrSideLeds, uint32_t iNrTopLeds, ILEDStrip &iTargetStrip)
   : mNrSideLeds(iNrSideLeds)
   , mNrTopLeds(iNrTopLeds)
   , mLedStrip(iTargetStrip)
