@@ -136,6 +136,12 @@ int main(void)
   for(;;)
   {
     myDevice.WriteBuffer( colorBuffer, sizeof(colorBuffer));
+    usleep(10000);
+    myDevice.WriteBuffer( colorBuffer, sizeof(colorBuffer));
+    usleep(10000);
+    myDevice.WriteBuffer( colorBuffer, sizeof(colorBuffer));
+    usleep(10000);
+    myDevice.WriteBuffer( colorBuffer, sizeof(colorBuffer));
     uint8_t t_g = colorBuffer[(nrLeds -1) * 3]    ,
 	    t_r = colorBuffer[(nrLeds -1) * 3 + 1] ,
 	    t_b = colorBuffer[(nrLeds -1) * 3 + 2] ;
@@ -151,7 +157,7 @@ int main(void)
     colorBuffer[0] = t_g;
     colorBuffer[1] = t_r;
     colorBuffer[2] = t_b;
-    usleep(50000);
+    usleep(20000);
   }
 
   return 0;
