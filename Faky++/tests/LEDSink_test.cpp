@@ -24,7 +24,7 @@ class LEDSinkTest : public ::testing::Test
 
     }
     
-    class MockLedStrip : public LEDStrip
+    class MockLedStrip : public ILEDStrip
     {
       public:
 	MockLedStrip()

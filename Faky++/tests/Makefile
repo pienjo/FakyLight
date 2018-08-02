@@ -6,7 +6,7 @@ OBJECTS_1=$(SOURCES:../%.cpp=obj/%.o)
 OBJECTS_2=$(OBJECTS_1:%.cpp=obj/%.o)
 OBJECTS=$(OBJECTS_2:../%.c=obj/%.o) obj/gtest-all.o
 CFLAGS=-g -Wall -Werror -I $(GTEST_DIR)/include -I ..
-LDFLAGS=-pthread -lturbojpeg
+LDFLAGS= -lturbojpeg -pthread -lm
 
 DEPS=$(OBJECTS:.o=.d)
 
@@ -19,7 +19,7 @@ clean:
 	rm -rf $(OBJECTS) $(DEPS) test
 
 test:	$(OBJECTS)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS)
+	$(CXX) -o $@ $(OBJECTS) $(LDFLAGS) 
 
 -include $(DEPS)
 
