@@ -28,6 +28,8 @@ Image RoapSource::FetchImage()
 
     mFetchRequest->setOpt<cURLpp::Options::Url>(requestStream.str());
     mFetchRequest->setOpt<cURLpp::Options::HttpGet>(true);
+    mFetchRequest->setOpt<cURLpp::Options::Timeout>(5);
+
     std::list<std::string> header;
     header.push_back("Connection: keep-alive");
     mFetchRequest->setOpt<cURLpp::Options::HttpHeader>(header);
@@ -93,6 +95,7 @@ void RoapSource::PerformAuthenticationRequest()
   std::istringstream curlStream(authRequestStr);
   authRequest.setOpt<cURLpp::Options::PostFieldSize>(authRequestStr.size());
   authRequest.setOpt<cURLpp::Options::ReadStream>(&curlStream);
+  authRequest.setOpt<cURLpp::Options::Timeout>(5);
   authRequest.setOpt<cURLpp::Options::Post>(true);
   
   std::ostringstream ignoredOutputStream; 
