@@ -1,5 +1,5 @@
-LUA_CFLAGS=`pkg-config lua5.1 --cflags`
-LUA_LDFLAGS=`pkg-config lua5.1 --libs`
+LUA_CFLAGS=`pkg-config lua5.2 --cflags`
+LUA_LDFLAGS=`pkg-config lua5.2 --libs`
 
 SOURCES=nanojpeg.c luabinding.c colorRoutines.c
 

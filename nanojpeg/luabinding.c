@@ -331,7 +331,8 @@ static const struct luaL_Reg nanojpeg_functions[] =
 
 LUALIB_API int luaopen_nanojpeg(lua_State *L)
 {
-    luaL_openlib(L, "nanojpeg", nanojpeg_functions, 0);
- 
+    lua_newtable(L);
+    luaL_setfuncs(L, nanojpeg_functions, 0);
+    lua_setglobal(L, "nanojpeg"); 
     return 1;
 }
