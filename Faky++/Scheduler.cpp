@@ -8,6 +8,8 @@ using namespace std::chrono_literals;
 Scheduler::Scheduler(ImageSource &source, ColorSink &sink)
   : mSource(source)
   , mSink(sink)
+  , mNrFramesRetrieved(0)
+  , mTimeoutTriggered(false)
 {
 }
 
@@ -28,8 +30,8 @@ void Scheduler::RetrieveLoop()
       wakeupTime += framePeriod;
     } catch (ImageSource::timeout_error &)
     {
-      printf("Timeout\n");
       wakeupTime += timeoutPeriod; 
+      mTimeoutTriggered = true;
     }
     
     do {
@@ -78,8 +80,12 @@ void Scheduler::DiagnosticsLoop()
   for(;;)
   {
     uint32_t produced = mNrFramesRetrieved.exchange(0);
-    
-    printf("%d FPS  \r", produced);
+
+    if (produced != 0)
+    {
+      mTimeoutTriggered = false;
+    } 
+    printf("%d FPS %s\r", produced, mTimeoutTriggered?"(Timeout)":"          ");
     fflush(stdout);
     std::this_thread::sleep_for( 1s );
   }

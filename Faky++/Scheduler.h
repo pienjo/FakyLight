@@ -30,6 +30,7 @@ class Scheduler
     std::list<Image> mOutstandingImages;
 
     std::atomic<uint32_t> mNrFramesRetrieved;
+    std::atomic<bool> mTimeoutTriggered;
 };
 
 #endif
