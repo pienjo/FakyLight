@@ -11,7 +11,7 @@ STREAM_OBJECTS=$(STREAM_SOURCES:%.cpp=obj/%.o)
 STREAM_GPIO_OBJECTS=$(STREAM_GPIO_SOURCES:%.cpp=obj/%.o)
 WS2812_TEST_OBJECTS=$(WS2812_TEST_SOURCES:%.cpp=obj/%.o)
 
-CFLAGS=-g -Wall -Werror $(shell pkg-config --cflags curlpp)
+CFLAGS=-g -O3 -Wall -Werror $(shell pkg-config --cflags curlpp)
 LDFLAGS=-lcurl -lcurlpp -lm -lturbojpeg -lpthread -lgpiod
 
 DEPS=$(WS2812_TEST_OBJECTS:.o=.d) $(FETCH_OBJECTS:.o=.d) $(STREAM_OBJECTS:.o=.d) $(STREAM_GPIO_OBJECTS:.o=.d)
