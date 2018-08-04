@@ -1,4 +1,4 @@
-local nanojpeg = require 'nanojpeg'
+require 'nanojpeg'
 local rects = require "rects"
 
 local function do_test(input_fn)
@@ -49,3 +49,6 @@ for i=1,5 do
   do_test("TestImages/americans1/input"..i..".ppm")
 end 
 
+for i = 52,84 do
+  do_test("TestImages/RedFlash/issue-" .. string.format("%03d", i) .. ".ppm")
+end
