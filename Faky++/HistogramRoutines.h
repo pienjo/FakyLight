@@ -8,7 +8,7 @@ namespace HistogramRoutines
 {
   using ColorRoutines::ImageStatistics;
 
-  void SmoothHueHistogram(ImageStatistics &ioStatistics, uint32_t iKernelSize);
+  void SmoothHueHistogram(ImageStatistics &ioStatistics, const std::vector<uint32_t> &iKernel);
   
   void ClearLowerValueBuckets(ImageStatistics &ioStatistics, size_t nrBuckets);
 

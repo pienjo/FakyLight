@@ -3,7 +3,11 @@
 
 using namespace HistogramRoutines;
 
+
 namespace {
+  std::vector<uint32_t> testKernel = {1,2,3,4,5 };
+  int32_t totalKernelWeight = 29;
+
   ::testing::AssertionResult AssertTableContents(const char *m_expr, const char *n_expr, const char *index_expr, uint32_t m, uint32_t n, int index)
   {
     if (m == n)
@@ -19,78 +23,102 @@ TEST(SmoothHistogram, Pulse_center)
 {
   // Arrange
   ImageStatistics stats;
-  const uint32_t kernelSize = 7; 
-  stats.mHueHistogram[ImageStatistics::HueHistogramSize/2] = 1000;
-  stats.mHueHistogramTotal = 1000;
+  const int32_t pulseLocation = ImageStatistics::HueHistogramSize/2 ;
+  stats.mHueHistogram[pulseLocation] = 1024;
+  stats.mHueHistogramTotal = 1024;
+
   // Act
-  SmoothHueHistogram(stats, kernelSize);
+  SmoothHueHistogram(stats, testKernel);
 
   // Assert
-
+  uint32_t total = 0;
   for (uint32_t i = 0; i < ImageStatistics::HueHistogramSize; ++i)
   {
-    if (i >= ImageStatistics::HueHistogramSize/2 - kernelSize && i <= ImageStatistics::HueHistogramSize/2+kernelSize)
-    {
-      EXPECT_PRED_FORMAT3(AssertTableContents, 1000, stats.mHueHistogram[i], i);
-    }
-    else
+    int pulseDistance = abs((int32_t)i - pulseLocation);
+    total += stats.mHueHistogram[i];
+
+    if (pulseDistance >= ImageStatistics::HueHistogramSize / 2)
+      pulseDistance = ImageStatistics::HueHistogramSize - pulseDistance;
+
+    if (pulseDistance >= (int32_t) testKernel.size())
     {
       EXPECT_PRED_FORMAT3(AssertTableContents, 0, stats.mHueHistogram[i], i);
     }
+    else
+    {
+      uint32_t expected = (1024 * testKernel[pulseDistance] + totalKernelWeight/2) / totalKernelWeight;
+      EXPECT_PRED_FORMAT3(AssertTableContents, expected, stats.mHueHistogram[i], i);
+    }
   }
-  ASSERT_EQ(15000U, stats.mHueHistogramTotal);
+  ASSERT_GE(2, abs((int)stats.mHueHistogramTotal - (int)total));
 }
 
 TEST(SmoothHistogram, Pulse_start)
 {
   // Arrange
   ImageStatistics stats;
-  const uint32_t kernelSize = 7; 
-  stats.mHueHistogram[0] = 1000;
-  stats.mHueHistogramTotal = 1000;
+  const int32_t pulseLocation = 0;
+  stats.mHueHistogram[pulseLocation] = 1024;
+  stats.mHueHistogramTotal = 1024;
+
   // Act
-  SmoothHueHistogram(stats, kernelSize);
+  SmoothHueHistogram(stats, testKernel);
 
   // Assert
-
+  uint32_t total = 0;
   for (uint32_t i = 0; i < ImageStatistics::HueHistogramSize; ++i)
   {
-    if (i >= ImageStatistics::HueHistogramSize - kernelSize || i <= kernelSize)
-    {
-      EXPECT_PRED_FORMAT3(AssertTableContents, 1000, stats.mHueHistogram[i], i);
-    }
-    else
+    int pulseDistance = abs((int32_t)i - pulseLocation);
+    total += stats.mHueHistogram[i];
+
+    if (pulseDistance >= ImageStatistics::HueHistogramSize / 2)
+      pulseDistance = ImageStatistics::HueHistogramSize - pulseDistance;
+
+    if (pulseDistance >= (int32_t) testKernel.size())
     {
       EXPECT_PRED_FORMAT3(AssertTableContents, 0, stats.mHueHistogram[i], i);
     }
+    else
+    {
+      uint32_t expected = (1024 * testKernel[pulseDistance] + totalKernelWeight/2) / totalKernelWeight;
+      EXPECT_PRED_FORMAT3(AssertTableContents, expected, stats.mHueHistogram[i], i);
+    }
   }
-  ASSERT_EQ(15000U, stats.mHueHistogramTotal);
+  ASSERT_GE(2, abs((int)stats.mHueHistogramTotal - (int)total));
 }
 
 TEST(SmoothHistogram, Pulse_end)
 {
   // Arrange
   ImageStatistics stats;
-  const uint32_t kernelSize = 7; 
-  stats.mHueHistogram[HSVColor::HUE_MAX] = 1000;
-  stats.mHueHistogramTotal = 1000;
+  const int32_t pulseLocation = ImageStatistics::HueHistogramSize - 1;
+  stats.mHueHistogram[pulseLocation] = 1024;
+  stats.mHueHistogramTotal = 1024;
+
   // Act
-  SmoothHueHistogram(stats, kernelSize);
+  SmoothHueHistogram(stats, testKernel);
 
   // Assert
-
+  uint32_t total = 0;
   for (uint32_t i = 0; i < ImageStatistics::HueHistogramSize; ++i)
   {
-    if (i >= ImageStatistics::HueHistogramSize - kernelSize - 1 || i <= kernelSize - 1)
-    {
-      EXPECT_PRED_FORMAT3(AssertTableContents, 1000, stats.mHueHistogram[i], i);
-    }
-    else
+    int pulseDistance = abs((int32_t)i - pulseLocation);
+    total += stats.mHueHistogram[i];
+
+    if (pulseDistance >= ImageStatistics::HueHistogramSize / 2)
+      pulseDistance = ImageStatistics::HueHistogramSize - pulseDistance;
+
+    if (pulseDistance >= (int32_t) testKernel.size())
     {
       EXPECT_PRED_FORMAT3(AssertTableContents, 0, stats.mHueHistogram[i], i);
     }
+    else
+    {
+      uint32_t expected = (1024 * testKernel[pulseDistance] + totalKernelWeight/2) / totalKernelWeight;
+      EXPECT_PRED_FORMAT3(AssertTableContents, expected, stats.mHueHistogram[i], i);
+    }
   }
-  ASSERT_EQ(15000U, stats.mHueHistogramTotal);
+  ASSERT_GE(2, abs((int)stats.mHueHistogramTotal - (int)total));
 }
 TEST(GetMode_Hue, modeBegin)
 {

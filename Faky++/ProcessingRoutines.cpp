@@ -3,7 +3,6 @@
 
 #include "HistogramRoutines.h"
 
-#define SMOOTH_KERNEL_SIZE 7
 #define MIN_VALUE_BUCKET 9
 const RelativeRect rectsToProcess[] =
 {
@@ -18,6 +17,11 @@ const RelativeRect rectsToProcess[] =
   {  0, 66.6,  25, 100 },
 };
 
+namespace
+{
+std::vector<uint32_t> kernel = { 70, 56, 28, 8, 1};
+}
+
 void ProcessingRoutines::Process(const Image &sourceImage, ColorSink &sink, IDebugOutput *pOptionalDebugOutput)
 {
   for (const RelativeRect &r : rectsToProcess )
@@ -26,8 +30,7 @@ void ProcessingRoutines::Process(const Image &sourceImage, ColorSink &sink, IDeb
     if (pOptionalDebugOutput)
       pOptionalDebugOutput->AddDebugOutput("RawHue", stats.mHueHistogram); 
 
-    
-    HistogramRoutines::SmoothHueHistogram(stats, SMOOTH_KERNEL_SIZE );
+    HistogramRoutines::SmoothHueHistogram(stats, kernel );
     if (pOptionalDebugOutput)
       pOptionalDebugOutput->AddDebugOutput("FilteredHue", stats.mHueHistogram); 
 

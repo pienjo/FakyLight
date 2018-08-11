@@ -2,33 +2,44 @@
 
 using HistogramRoutines::ImageStatistics;
 
-void HistogramRoutines::SmoothHueHistogram(ImageStatistics &ioStatistics, uint32_t iKernelSize)
+void HistogramRoutines::SmoothHueHistogram(ImageStatistics &ioStatistics, const std::vector<uint32_t> &iKernel)
 {
-  std::vector<uint32_t> copy = ioStatistics.mHueHistogram;
+  ColorRoutines::histogramT outputHistogram;
+  int kernelSize = iKernel.size();
 
-  uint32_t total = copy[0];
-
-  for (uint32_t init = 1; init <= iKernelSize; ++init)
+  outputHistogram.resize(ImageStatistics::HueHistogramSize);
+  
+  for (size_t idx = 0; idx < ImageStatistics::HueHistogramSize; ++idx)
   {
-    total += copy[init];
-    total += copy[ImageStatistics::HueHistogramSize - init ];
+    size_t leftIdx = idx;
+    size_t rightIdx = idx;
+    
+    uint32_t v = ioStatistics.mHueHistogram[idx];
+    
+    outputHistogram[idx] += iKernel[0] * v;
+
+    for (int k = 1; k < kernelSize; ++k)
+    {
+      leftIdx = (leftIdx > 0) ? leftIdx - 1 : ImageStatistics::HueHistogramSize - 1;
+      rightIdx = (rightIdx < ImageStatistics::HueHistogramSize - 1) ? rightIdx + 1 : 0;
+      
+      outputHistogram[leftIdx] += iKernel[k] * v;
+      outputHistogram[rightIdx] += iKernel[k] * v;
+    }
   }
- 
-  for (uint32_t center = 0; center < ImageStatistics::HueHistogramSize; ++center)
+  
+  uint32_t totalKernelWeight = 0;
+  for (uint32_t k : iKernel)
   {
-    ioStatistics.mHueHistogram[center] = total;
-    
-    int oldIndex = (center - iKernelSize + ImageStatistics::HueHistogramSize) % (ImageStatistics::HueHistogramSize); 
-
-    uint32_t oldValue = copy[oldIndex];
-    
-    int newIndex = (center + iKernelSize + 1) % (ImageStatistics::HueHistogramSize); 
-    uint32_t newValue = copy[ newIndex];
-    total += newValue;
-    total -= oldValue;
+    totalKernelWeight += k*2;
   }
+  
+  totalKernelWeight -= iKernel[0];
 
-  ioStatistics.mHueHistogramTotal *= (2*iKernelSize + 1);
+  for (size_t idx = 0; idx < ImageStatistics::HueHistogramSize; ++idx)
+  {
+    ioStatistics.mHueHistogram[idx] = (outputHistogram[idx] + totalKernelWeight/2) / totalKernelWeight;
+  }
 }
 
 size_t HistogramRoutines::GetMode_Hue(const ImageStatistics &iStatistics)
@@ -88,8 +99,8 @@ HSVColor HistogramRoutines::GetDominantColor(const ImageStatistics &statistics)
 
   if (statistics.mHueHistogramTotal > 0)
   {
-    uint32_t saturation = 256 * 15 * statistics.mHueHistogram[hsvColor.h] / statistics.mHueHistogramTotal;
-    saturation = (saturation * (uint32_t) statistics.mAverageSaturation) / 128;
+    uint32_t saturation = 256 * GetHueBucketSum(statistics, hsvColor.h, 7) / statistics.mHueHistogramTotal;
+    saturation = (saturation * (uint32_t) statistics.mAverageSaturation) / 114;
 
     hsvColor.s = (uint8_t) std::min( (uint32_t) 255, saturation);
   }
