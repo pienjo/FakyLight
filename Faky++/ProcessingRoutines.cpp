@@ -18,13 +18,19 @@ const RelativeRect rectsToProcess[] =
   {  0, 66.6,  25, 100 },
 };
 
-void ProcessingRoutines::Process(const Image &sourceImage, ColorSink &sink)
+void ProcessingRoutines::Process(const Image &sourceImage, ColorSink &sink, IDebugOutput *pOptionalDebugOutput)
 {
   for (const RelativeRect &r : rectsToProcess )
   {
     ColorRoutines::ImageStatistics stats = ColorRoutines::GetImageStatistics(sourceImage, r);
+    if (pOptionalDebugOutput)
+      pOptionalDebugOutput->AddDebugOutput("RawHue", stats.mHueHistogram); 
+
     
     HistogramRoutines::SmoothHueHistogram(stats, SMOOTH_KERNEL_SIZE );
+    if (pOptionalDebugOutput)
+      pOptionalDebugOutput->AddDebugOutput("FilteredHue", stats.mHueHistogram); 
+
     HistogramRoutines::ClearLowerValueBuckets(stats, MIN_VALUE_BUCKET );
     HSVColor dominantHSV = HistogramRoutines::GetDominantColor(stats);
     

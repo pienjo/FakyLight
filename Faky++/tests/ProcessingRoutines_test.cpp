@@ -1,4 +1,10 @@
 #include <gtest/gtest.h>
+#include <list>
+#include <ios>
+#include <iostream>
+#include <ostream>
+#include <fstream>
+#include <algorithm>
 
 #include "../ProcessingRoutines.h"
 #include "../FileSource.h"
@@ -220,8 +226,8 @@ namespace
   {
     std::string mFilename;
     std::string mFilenameOut;
+    std::string mCsvFilenameOut;
     RGBColor mColors[9];
-
   };
   
   std::ostream & operator<< (::std::ostream &os, const RegressionData &d)
@@ -235,6 +241,7 @@ const RegressionData myRegressionData[] =
 {
   { "../../TestImages/100nl.ppm", 
     "../../TestImages/100nl-out-pp.ppm",
+    "../../TestImages/100nl-out-pp.csv",
     {
       { 130, 52, 0 },
       { 255, 102, 0 },
@@ -249,6 +256,7 @@ const RegressionData myRegressionData[] =
   },
   { "../../TestImages/bamigo.ppm", 
     "../../TestImages/bamigo-out-pp.ppm",
+    "../../TestImages/bamigo-out-pp.csv",
     {
       { 120, 116, 124}, 
       { 152, 146, 159}, 
@@ -263,6 +271,7 @@ const RegressionData myRegressionData[] =
   },
   { "../../TestImages/blackscreen.ppm", 
     "../../TestImages/blackscreen-out-pp.ppm",
+    "../../TestImages/blackscreen-out-pp.csv",
     {
       {114, 114, 114 },
       {114, 114, 114 },
@@ -277,6 +286,7 @@ const RegressionData myRegressionData[] =
   },
   { "../../TestImages/discovery.ppm", 
     "../../TestImages/discovery-out-pp.ppm",
+    "../../TestImages/discovery-out-pp.csv",
     {
       { 138, 136, 137}, 
       { 255, 247, 254},
@@ -291,6 +301,7 @@ const RegressionData myRegressionData[] =
   },
   { "../../TestImages/startrek/input.ppm", 
     "../../TestImages/startrek/input-out-pp.ppm",
+    "../../TestImages/startrek/input-out-pp.csv",
     {
       { 124, 121, 112},
       { 179, 164, 158},
@@ -305,6 +316,7 @@ const RegressionData myRegressionData[] =
   },
   { "../../TestImages/startrek/input1.ppm", 
     "../../TestImages/startrek/input1-out-pp.ppm",
+    "../../TestImages/startrek/input1-out-pp.csv",
     {
       { 118, 122, 126},
       { 100, 113, 127},
@@ -319,6 +331,7 @@ const RegressionData myRegressionData[] =
   },
   { "../../TestImages/americans1/input1.ppm", 
     "../../TestImages/americans1/input1-out-pp.ppm",
+    "../../TestImages/americans1/input1-out-pp.csv",
     {
       {131,108,99},
       {154,87,77},
@@ -353,6 +366,7 @@ class ImageRegressionTest : public ::testing::Test, public ::testing::WithParamI
     ImageRegressionTest() 
       : mResult( GetParam().mFilenameOut)
       , mSource(*this, GetParam().mFilename)
+      , mCsvOutput(GetParam().mCsvFilenameOut)
       {
 	mInhibit = true;
       }
@@ -395,6 +409,104 @@ class ImageRegressionTest : public ::testing::Test, public ::testing::WithParamI
       private:
 	ImageRegressionTest &mParent;
     } mSource;
+
+    class CsvOutput : public IDebugOutput
+    {
+      public:
+	CsvOutput(const std::string &pFilename)
+	  : mFilename(pFilename)
+	{
+	}
+	
+	~CsvOutput()
+	{
+	  if (!mData.empty())
+	    WriteOutput();
+	}
+
+	void AddDebugOutput(const std::string &pLabel, const ColorRoutines::histogramT &pHistogram) override
+	{
+	  mData[pLabel].push_back(pHistogram);
+	}
+      private:
+	size_t GetNrColumns() const
+	{
+	  size_t nrColumns = 0;
+	  for (const auto &data : mData)
+	  {
+	    nrColumns = std::max(nrColumns, data.second.size()); 
+	  }
+
+	  return nrColumns;
+	}
+
+	size_t GetNrRows() const
+	{
+	  size_t nrRows = 0;
+	  for (const auto &data : mData)
+	  {
+	    for (const auto &columnData : data.second)
+	    {
+	      nrRows = std::max(nrRows, columnData.size()); 
+	    }
+	  }
+
+	  return nrRows;
+	}
+	void GenerateHeaderLine( std::ofstream &outputFile) const
+	{
+	  for (size_t i = 0; i < GetNrColumns(); ++i)
+	  {
+	    for (const auto &data : mData)
+	    {
+	      outputFile << data.first << i << ",";
+	    }
+	  }
+	  swallowLastCharacter(outputFile);  
+	  outputFile << std::endl;
+	}
+
+	static void swallowLastCharacter(std::ofstream &outputFile)
+	{
+	  std::streampos pos = outputFile.tellp();
+
+	  outputFile.seekp(pos - (std::streamoff) 1);
+	}
+
+	void GenerateRow(int rowno, std::ofstream &outputFile) const
+	{
+	  for (size_t i = 0; i < GetNrColumns(); ++i)
+	  {
+	    for (const auto &data : mData)
+	    {
+	      if (data.second.size() >= i)
+	      {
+		const ColorRoutines::histogramT &hist = data.second[i];
+		outputFile << hist[rowno] << ",";
+	      }
+	    }
+	  }
+	  swallowLastCharacter(outputFile);  
+	  outputFile << std::endl;
+	}
+
+	void WriteOutput() const
+	{
+	  size_t nrRows = GetNrRows();
+
+	  std::ofstream outputFile;
+	  outputFile.open(mFilename);
+
+	  GenerateHeaderLine( outputFile );
+	  for(size_t i = 0; i < nrRows; ++i)
+	    GenerateRow(i, outputFile);
+
+	  outputFile.close();
+	}
+
+	std::map<std::string, std::vector<ColorRoutines::histogramT> > mData;
+	std::string mFilename;
+    } mCsvOutput;
     bool mInhibit;
 };
 
