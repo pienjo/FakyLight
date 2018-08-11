@@ -14,6 +14,8 @@ namespace HistogramRoutines
 
   size_t GetMode_Hue(const ImageStatistics &iStatistics);
   size_t GetModal_Value(const ImageStatistics &iStatistics);
+  
+  uint32_t GetHueBucketSum(const ImageStatistics &iStatistics, size_t centerBucket, size_t windowSize);
 
   HSVColor GetDominantColor(const ImageStatistics &statistics);  
 }

@@ -99,3 +99,21 @@ HSVColor HistogramRoutines::GetDominantColor(const ImageStatistics &statistics)
   hsvColor.v  = (uint8_t) std::min ((uint32_t) 255,  modalValue + 96); // Add offset.
   return hsvColor;
 }
+
+uint32_t HistogramRoutines::GetHueBucketSum(const ImageStatistics &iStatistics, size_t centerBucket, size_t windowSize)
+{
+  uint32_t returnValue = iStatistics.mHueHistogram[centerBucket];
+
+  size_t leftIdx = centerBucket;
+  size_t rightIdx = centerBucket;
+
+  for (size_t k = 0; k < windowSize; ++k)
+  {
+    leftIdx = (leftIdx > 0) ? leftIdx - 1 : ImageStatistics::HueHistogramSize - 1;
+    rightIdx = (rightIdx < ImageStatistics::HueHistogramSize - 1) ? rightIdx + 1 : 0;
+
+    returnValue += iStatistics.mHueHistogram[leftIdx] + iStatistics.mHueHistogram[rightIdx];
+  }
+
+  return returnValue;
+}

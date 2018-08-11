@@ -191,3 +191,57 @@ TEST(GetModal_Value, twoPeaks)
   // Assert
   ASSERT_EQ(127U, modal);
 }
+
+TEST(GetHueBucketSum, center)
+{
+  // Arrange
+  ImageStatistics stats;
+
+  for (int i = 100; i < 121; ++i)
+  {
+    stats.mHueHistogram[i] = 1;
+  }
+  
+  for (int i = 105; i < 116; ++i)
+  {
+    stats.mHueHistogram[i] = 2;
+  }
+
+  stats.mHueHistogram[110] = 3;
+
+  // Act
+  uint32_t total = HistogramRoutines::GetHueBucketSum(stats, 110, 5);
+
+  // Assert
+  ASSERT_EQ( (uint32_t)( 3 + 10 * 2 ), total);
+}
+
+TEST(GetHueBucketSum, begin)
+{
+  // Arrange
+  ImageStatistics stats;
+  
+  stats.mHueHistogram[0] = 10;
+  stats.mHueHistogram[HSVColor::HUE_MAX - 4] = 20;
+
+  // Act
+  uint32_t total = HistogramRoutines::GetHueBucketSum(stats, 0, 5);
+
+  // Assert
+  ASSERT_EQ( 30U, total);
+}
+
+TEST(GetHueBucketSum, end)
+{
+  // Arrange
+  ImageStatistics stats;
+  
+  stats.mHueHistogram[4] = 20;
+  stats.mHueHistogram[HSVColor::HUE_MAX] = 10;
+
+  // Act
+  uint32_t total = HistogramRoutines::GetHueBucketSum(stats, HSVColor::HUE_MAX, 5);
+
+  // Assert
+  ASSERT_EQ( 30U, total);
+}
