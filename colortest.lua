@@ -49,6 +49,6 @@ for i=1,5 do
   do_test("TestImages/americans1/input"..i..".ppm")
 end 
 
-for i = 52,84 do
-  do_test("TestImages/RedFlash/issue-" .. string.format("%03d", i) .. ".ppm")
+for i = 1,10 do
+  do_test("TestImages/RedFlash/redflash-" .. string.format("%02d", i) .. ".ppm")
 end
