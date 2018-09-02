@@ -308,9 +308,9 @@ const RegressionData myRegressionData[] =
       { 41, 159, 179 },
       { 69, 137, 148 },
       { 139, 119, 107 },
-      { 136, 100, 105 },
+      { 136, 97, 101 },
       { 145, 100, 79 },
-      { 146, 80, 67 },
+      { 146, 80, 66 },
       { 157, 91, 65 }
     }
   },
@@ -334,7 +334,7 @@ const RegressionData myRegressionData[] =
     "../../TestImages/americans1/input1-out-pp.csv",
     {
       {131,114,101},
-      {154,83,79},
+      {154,82,78},
       {154,119,93},
       {165,119,112},
       {255,228,208},
@@ -363,7 +363,7 @@ const RegressionData myRegressionData[] =
     "../../TestImages/RedFlash/redflash-01-out-pp.ppm", 
     "../../TestImages/RedFlash/redflash-01-out-pp.csv", 
     {
-      {241,4,14},
+      {241,2,12},
       {255,0,9},
       {255,0,9},
       {255,0,9},
@@ -378,7 +378,7 @@ const RegressionData myRegressionData[] =
     "../../TestImages/RedFlash/redflash-03-out-pp.ppm", 
     "../../TestImages/RedFlash/redflash-03-out-pp.csv", 
     {
-      {243,5,15},
+      {243,4,14},
       {255,0,9},
       {255,0,9},
       {255,0,9},
@@ -412,7 +412,7 @@ const RegressionData myRegressionData[] =
       {255,0,9},
       {255,0,9},
       {255,0,9},
-      {255,47,56},
+      {255,45,54},
       {255,0,9},
       {255,0,9},
       {255,0,9},
@@ -427,7 +427,7 @@ const RegressionData myRegressionData[] =
       {255,0,9},
       {255,0,9},
       {255,0,9},
-      {255,47,56},
+      {255,45,54},
       {255,0,9},
       {255,0,9},
       {255,0,9},

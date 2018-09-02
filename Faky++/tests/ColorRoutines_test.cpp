@@ -5,18 +5,32 @@
 
 using namespace ColorRoutines;
 
-class TestImage_T : public Image 
-{
-  public:
-    template<int arraySize>
-    TestImage_T(const uint8_t (&testImageContents)[arraySize])
-    {
-      static_assert( arraySize % 3 == 0, "Arraysize must be a multiple of 3");
 
-      Claim(arraySize /3, 1);
-      memcpy(data(), testImageContents, arraySize);
-    }
-};
+namespace {
+
+  class TestImage_T : public Image 
+  {
+    public:
+      template<int arraySize>
+      TestImage_T(const uint8_t (&testImageContents)[arraySize])
+      {
+        static_assert( arraySize % 3 == 0, "Arraysize must be a multiple of 3");
+
+        Claim(arraySize /3, 1);
+        memcpy(data(), testImageContents, arraySize);
+      }
+  };
+
+  ::testing::AssertionResult AssertTableContents(const char *m_expr, const char *n_expr, const char *index_expr, bool m, bool n, int index)
+  {
+    if (m == n)
+      return ::testing::AssertionSuccess();
+
+    return ::testing::AssertionFailure() 
+       << m_expr << " ( " << m <<") and " 
+       << n_expr << " ( " << n <<") differ (index "<< index <<")";
+  }
+}
 
 TEST(RGBtoHSV, FullRed)
 {
@@ -112,35 +126,63 @@ TEST(RGBtoHSV, HueRange)
   // arrange
   uint8_t min = 255;
   uint8_t max = 0;
+  
+  std::vector<bool> visited;
+  visited.resize(256, false);
 
   // act
   for (int componentValue = 0; componentValue <256; ++componentValue)
   {
-    uint8_t contraValue = 255 - (uint8_t) componentValue;
-    
-    RGBColor rgb = { (uint8_t) componentValue, contraValue, 0 };
+    RGBColor rgb = { (uint8_t) componentValue, 255, 0 };
     HSVColor hsv;
 
     hsv = RGBtoHSV(rgb);
     min = std::min(hsv.h, min);
     max = std::max(hsv.h, max);
+    visited[hsv.h] = true;
 
-    rgb = { (uint8_t) componentValue, 0, contraValue};
+    rgb = { 255, (uint8_t) componentValue, 0 };
     
     hsv = RGBtoHSV(rgb);
     min = std::min(hsv.h, min);
     max = std::max(hsv.h, max);
+    visited[hsv.h] = true;
 
-    rgb = { 0, (uint8_t) componentValue, contraValue};
+    rgb = { (uint8_t) componentValue, 0, 255 };
     
     hsv = RGBtoHSV(rgb);
     min = std::min(hsv.h, min);
     max = std::max(hsv.h, max);
+    visited[hsv.h] = true;
+    
+    rgb = { 255, 0, (uint8_t) componentValue };
+    
+    hsv = RGBtoHSV(rgb);
+    min = std::min(hsv.h, min);
+    max = std::max(hsv.h, max);
+    visited[hsv.h] = true;
+    
+    rgb = { 0, (uint8_t) componentValue, 255};
+    
+    hsv = RGBtoHSV(rgb);
+    min = std::min(hsv.h, min);
+    max = std::max(hsv.h, max);
+    visited[hsv.h] = true;
+
+    rgb = { 0, 255, (uint8_t) componentValue};
+    
+    hsv = RGBtoHSV(rgb);
+    min = std::min(hsv.h, min);
+    max = std::max(hsv.h, max);
+    visited[hsv.h] = true;
   }
 
   // Assert
   ASSERT_EQ(0, min);
   ASSERT_EQ(HSVColor::HUE_MAX, max);
+  for (int i = min; i <= max; ++i)
+    EXPECT_PRED_FORMAT3(AssertTableContents, true, visited[i], i);
+   
 }
 
 TEST(HSVtoRGB, FullRed)
@@ -155,6 +197,34 @@ TEST(HSVtoRGB, FullRed)
   ASSERT_EQ(255, rgb.r);
   ASSERT_EQ(0, rgb.g);
   ASSERT_EQ(0, rgb.b);
+}
+
+TEST(HSVtoRGB, NearlyRed_1)
+{
+  // arrange
+  const HSVColor hsv = { 1,255,255 };
+  
+  // act
+  RGBColor rgb = HSVtoRGB(hsv);
+
+  // assert
+  ASSERT_EQ(255, rgb.r);
+  ASSERT_EQ(6, rgb.g);
+  ASSERT_EQ(0, rgb.b);
+}
+
+TEST(HSVtoRGB, NearlyRed_2)
+{
+  // arrange
+  const HSVColor hsv = { HSVColor::HUE_MAX ,255,255 };
+  
+  // act
+  RGBColor rgb = HSVtoRGB(hsv);
+
+  // assert
+  ASSERT_EQ(255, rgb.r);
+  ASSERT_EQ(0, rgb.g);
+  ASSERT_EQ(9, rgb.b);
 }
 
 TEST(HSVtoRGB, FullYellow)
@@ -185,6 +255,33 @@ TEST(HSVtoRGB, FullGreen)
   ASSERT_EQ(0, rgb.b);
 }
 
+TEST(HSVtoRGB, NearlyGreen_1)
+{
+  // arrange
+  const HSVColor hsv = { 85,255,255 };
+  
+  // act
+  RGBColor rgb = HSVtoRGB(hsv);
+
+  // assert
+  ASSERT_EQ(0, rgb.r);
+  ASSERT_EQ(255, rgb.g);
+  ASSERT_EQ(6, rgb.b);
+}
+
+TEST(HSVtoRGB, NearlyGreen_2)
+{
+  // arrange
+  const HSVColor hsv = { 83 ,255,255 };
+  
+  // act
+  RGBColor rgb = HSVtoRGB(hsv);
+
+  // assert
+  ASSERT_EQ(9, rgb.r);
+  ASSERT_EQ(255, rgb.g);
+  ASSERT_EQ(0, rgb.b);
+}
 TEST(HSVtoRGB, FullCyan)
 {
   // arrange
@@ -213,6 +310,33 @@ TEST(HSVtoRGB, FullBlue)
   ASSERT_EQ(255, rgb.b);
 }
 
+TEST(HSVtoRGB, NearlyBlue_1)
+{
+  // arrange
+  const HSVColor hsv = { 169,255,255 };
+  
+  // act
+  RGBColor rgb = HSVtoRGB(hsv);
+
+  // assert
+  ASSERT_EQ(6, rgb.r);
+  ASSERT_EQ(0, rgb.g);
+  ASSERT_EQ(255, rgb.b);
+}
+
+TEST(HSVtoRGB, NearlyBlue_2)
+{
+  // arrange
+  const HSVColor hsv = { 167,255,255 };
+  
+  // act
+  RGBColor rgb = HSVtoRGB(hsv);
+
+  // assert
+  ASSERT_EQ(0, rgb.r);
+  ASSERT_EQ(9, rgb.g);
+  ASSERT_EQ(255, rgb.b);
+}
 TEST(HSVtoRGB, FullMagenta)
 {
   // arrange

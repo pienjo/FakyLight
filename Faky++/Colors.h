@@ -35,7 +35,7 @@ class HSVColor
     
     enum 
     {
-      HUE_MAX = 252
+      HUE_MAX = 251
     };
 };
 

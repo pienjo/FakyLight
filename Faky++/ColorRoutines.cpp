@@ -37,7 +37,7 @@ HSVColor ColorRoutines::RGBtoHSV(const RGBColor &rgb)
       if (rgb.g>=rgb.b)
         hsv.h = 42 * (rgb.g - rgb.b) / delta;
       else
-	hsv.h = HSVColor::HUE_MAX - 42 * (rgb.b-rgb.g) / delta;
+	      hsv.h = (HSVColor::HUE_MAX +1)- 42 * (rgb.b-rgb.g) / delta;
     } else if ( max == rgb.g)
     {
       hsv.h = 84 + 42 * (rgb.b - rgb.r) / delta;
@@ -47,6 +47,7 @@ HSVColor ColorRoutines::RGBtoHSV(const RGBColor &rgb)
     }
   }
 
+  hsv.h %= ((uint8_t)HSVColor::HUE_MAX + 1);
   return hsv;
 }
 
