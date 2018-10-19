@@ -85,8 +85,8 @@ void Scheduler::DiagnosticsLoop()
     {
       mTimeoutTriggered = false;
     } 
-    printf("%d FPS %s\r", produced, mTimeoutTriggered?"(Timeout)":"          ");
-    fflush(stdout);
+    //printf("%d FPS %s\r", produced, mTimeoutTriggered?"(Timeout)":"          ");
+    //fflush(stdout);
     std::this_thread::sleep_for( 1s );
   }
 }
