@@ -1,0 +1,9 @@
+[Unit]
+Description=Fakylight
+
+[Service]
+ExecStart=/home/martijnb/fakylight/Faky++/stream
+User=martijnb
+
+[Install]
+WantedBy=multi-user.target
