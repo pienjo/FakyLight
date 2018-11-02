@@ -14,3 +14,7 @@ If you decide to use a Raspberry Pi: Connect the WS2812s to the SPI MOSI pin, an
 Decoder resides in the 'Faky++' directory (good luck), the NodeLua code for the ESP8266 can be found in ''NodeMCU_client''.
 
 Note that this software uses a badly documented API on your TV, and currently uses a fixed authentication key. You might have to discover what the key for your system is. It's certainly not unique to every TV, but it might vary between models. Easiest way to figure it out is by using the "LG remote" app on your phone - use the code that is shown on the screen during that authentication process.
+
+Obligatory eample screenshots:
+![img_20181101_210556832](https://user-images.githubusercontent.com/12941778/47941599-0eb39400-deef-11e8-8b68-4b6ba863c647.jpg)
+![img_20181101_210624652](https://user-images.githubusercontent.com/12941778/47941600-0f4c2a80-deef-11e8-8748-03cbde5573f9.jpg)
