@@ -18,3 +18,4 @@ Note that this software uses a badly documented API on your TV, and currently us
 Obligatory eample screenshots:
 ![img_20181101_210556832](https://user-images.githubusercontent.com/12941778/47941599-0eb39400-deef-11e8-8b68-4b6ba863c647.jpg)
 ![img_20181101_210624652](https://user-images.githubusercontent.com/12941778/47941600-0f4c2a80-deef-11e8-8748-03cbde5573f9.jpg)
+[I created a video](https://www.youtube.com/watch?v=N8kVniX7-_A) to show the latency I get using a WS2866 to serve the LEDs. It gets a hair tighter if you use a Raspberry Pi.
