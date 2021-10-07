@@ -6,7 +6,7 @@ This is very much a work-in-progress. The hardware consists of several parts:
 
 * An LG tv (I have an LG 42UB820V), connected to a (W)LAN. There is no discovery, you'll have to make sure it has a fixed IP and adjust the source accordingly.
 * A Linux system somewhere to decode the images from the tv (doesn't have to be powerful, a raspberry pi suffices)
-* A string of WS2812s, attached to the back of said TV. Because this is very much a work-in-progress, the dimensions are currently a compile-time constant: 25 LEDs along the top, 14 along the sides. Pixels start in the lower left corner - I think...
+* A string of WS2812s, attached to the back of said TV. Because this is very much a work-in-progress, the dimensions are currently a compile-time constant: 50 LEDs along the top, 28 along the sides. Pixels start in the lower left corner - I think...
 * Something that connects with the WS2812 string. Either a ESP8266 running NodeLua (I used a WEMOS D1 mini), or something like a Raspberry pi (which can be the same pi that runs the decoder).
 
 If you decide to use a Raspberry Pi: Connect the WS2812s to the SPI MOSI pin, and use the ''stream_gpio'' binary. This may not work reliably with any ARM SoC, as it requires a decent DMA-driven SPI hardware module. The raspberry pi has one, the orange pi doesn't.
