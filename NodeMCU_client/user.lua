@@ -1,5 +1,5 @@
 
-local stripSize = 67 --53
+local stripSize = 106 --53
 local stripBuffer = ws2812.newBuffer(stripSize,3)
 local targetBuffer = ws2812.newBuffer(stripSize, 3)
 

@@ -21,12 +21,12 @@ void UDPStrip::SetContents(const std::vector<RGBColor> &contents)
   std::vector<uint8_t> buf;
   buf.reserve(contents.size() * 3);
   
-  for (const RGBColor &c : contents)
+  for (auto it = contents.rbegin(); it != contents.rend(); ++it)
   {
-    buf.push_back(c.g);
-    buf.push_back(c.r);
-    buf.push_back(c.b);
+    buf.push_back(it->g);
+    buf.push_back(it->r);
+    buf.push_back(it->b);
   }
-
+  
   sendto(mSocket, buf.data(), buf.size(), 0, (struct sockaddr *) &mSockAddr, sizeof(mSockAddr));
 }

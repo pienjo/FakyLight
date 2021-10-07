@@ -3,10 +3,38 @@
 #include <cstdint>
 #include <iostream>
 
+struct RGBGain
+{
+  RGBGain(float rGain, float gGain, float bGain)
+    : rGain{rGain}
+    , gGain{gGain}
+    , bGain{bGain}
+    {
+    
+    }
+  RGBGain() = default;
+  RGBGain(const RGBGain &rhs) = default;
+
+  float rGain {1.};
+  float gGain {1.};
+  float bGain {1.};
+};
+
 class RGBColor 
 {
   public:
     uint8_t r,g,b;
+
+    RGBColor operator*(const RGBGain &gains) const
+    {
+      RGBColor result{};
+      result.r = (uint8_t) std::max( 0.f, std::min( (float)r * gains.rGain, 255.f));
+      result.g = (uint8_t) std::max( 0.f, std::min( (float)g * gains.gGain, 255.f));
+      result.b = (uint8_t) std::max( 0.f, std::min( (float)b * gains.bGain, 255.f));
+
+      return result;
+    }
+
     bool operator==(const RGBColor &other) const
     {
       return r == other.r && b == other.b && g == other.g;

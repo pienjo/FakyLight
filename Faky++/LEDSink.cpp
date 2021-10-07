@@ -39,7 +39,7 @@ void LEDSink::SetColor(const RelativeRect &iRect, const RGBColor &Color)
 
   for (size_t i = start; i < stop; ++i)
   {
-    mLedValues[i] = Color;
+    mLedValues[i] = Color * mGain;
   }
 }
 
@@ -61,3 +61,8 @@ void LEDSink::Clear()
     mLedValues[i] = { 0, 0, 0};
   }
 }
+
+ void LEDSink::setGain(const RGBGain &gain)  
+ {
+   mGain = gain;
+ }
